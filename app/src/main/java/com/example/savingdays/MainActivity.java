@@ -5,8 +5,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -20,11 +23,22 @@ public class MainActivity extends AppCompatActivity {
     private Frag3 frag3;
     private Frag4 frag4;
 
+    private Button btn_move;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+//        로그인버튼 눌렀을때 이동
+        btn_move = findViewById(R.id.btn_move);
+        btn_move.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                startActivity(intent); // 액티비티 이동
+            }
+        });
 
         bottomNavigationView = findViewById(R.id.bottomNavi);
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -77,4 +91,5 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
     }
+
 }
