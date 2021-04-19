@@ -1,0 +1,373 @@
+Index: app/src/main/res/values/colors.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<resources>\r\n    <color name=\"purple_200\">#FFBB86FC</color>\r\n    <color name=\"purple_500\">#FF6200EE</color>\r\n    <color name=\"purple_700\">#FF3700B3</color>\r\n    <color name=\"teal_200\">#FF03DAC5</color>\r\n    <color name=\"teal_700\">#FF018786</color>\r\n    <color name=\"black\">#FF000000</color>\r\n    <color name=\"white\">#FFFFFFFF</color>\r\n</resources>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/values/colors.xml	(revision 8c737713f2f069016a7110d66249c0b8311e966c)
++++ app/src/main/res/values/colors.xml	(date 1618760936616)
+@@ -7,4 +7,8 @@
+     <color name="teal_700">#FF018786</color>
+     <color name="black">#FF000000</color>
+     <color name="white">#FFFFFFFF</color>
++    <color name='gray'>#888</color>
++    <color name='blue'>#0000FF</color>
++
++    <color name='WHITE'>#FFFFFFFF</color>
+ </resources>
+\ No newline at end of file
+Index: app/src/main/java/com/example/savingdays/CalendarAdapter.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/example/savingdays/CalendarAdapter.java	(date 1618756715426)
++++ app/src/main/java/com/example/savingdays/CalendarAdapter.java	(date 1618756715426)
+@@ -0,0 +1,45 @@
++package com.example.savingdays;
++import android.view.LayoutInflater;
++import android.view.View;
++import android.view.ViewGroup;
++
++import androidx.annotation.NonNull;
++import androidx.recyclerview.widget.RecyclerView;
++
++import java.util.ArrayList;
++public class CalendarAdapter extends RecyclerView.Adapter<CalendarViewHolder>{
++    private final ArrayList<String> daysOfMonth;
++    private final OnItemListener onItemListener;
++
++    public CalendarAdapter(ArrayList<String> daysOfMonth, OnItemListener onItemListener)
++    {
++        this.daysOfMonth = daysOfMonth;
++
++        this.onItemListener = onItemListener;
++    }
++
++    @NonNull
++    @Override
++    public CalendarViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
++
++        LayoutInflater inflater=LayoutInflater.from(parent.getContext());
++        View view=inflater.inflate(R.layout.activity_calendar_cell,parent,false);
++        ViewGroup.LayoutParams layoutParams=view.getLayoutParams();
++        layoutParams.height=(int)(parent.getHeight()*0.166666666);
++
++        return new CalendarViewHolder(view, onItemListener);
++    }
++
++    @Override
++    public void onBindViewHolder(@NonNull CalendarViewHolder holder, int position) {
++        holder.dayOfMonth.setText(daysOfMonth.get(position));
++    }
++
++    @Override
++    public int getItemCount() {
++        return daysOfMonth.size();
++    }
++    public interface  OnItemListener{
++        void onItemClick(int position,String dayText);
++    }
++}
+Index: app/src/main/java/com/example/savingdays/CalendarViewHolder.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/example/savingdays/CalendarViewHolder.java	(date 1618755383558)
++++ app/src/main/java/com/example/savingdays/CalendarViewHolder.java	(date 1618755383558)
+@@ -0,0 +1,21 @@
++package com.example.savingdays;
++import android.view.View;
++import android.widget.TextView;
++
++import androidx.annotation.NonNull;
++import androidx.recyclerview.widget.RecyclerView;
++public class CalendarViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
++    public final TextView dayOfMonth;
++    private final CalendarAdapter.OnItemListener onItemListener;
++    public CalendarViewHolder(@NonNull View itemView, CalendarAdapter.OnItemListener onItemListener) {
++        super(itemView);
++        dayOfMonth=itemView.findViewById(R.id.cellDayText);
++        this.onItemListener = onItemListener;
++        itemView.setOnClickListener(this);
++    }
++
++    @Override
++    public void onClick(View v) {
++        onItemListener.onItemClick(getAdapterPosition(),(String)dayOfMonth.getText());
++    }
++}
+Index: app/src/main/res/layout/activity_calendar.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/layout/activity_calendar.xml	(date 1618758289983)
++++ app/src/main/res/layout/activity_calendar.xml	(date 1618758289983)
+@@ -0,0 +1,125 @@
++<?xml version="1.0" encoding="utf-8"?>
++<LinearLayout
++    xmlns:android="http://schemas.android.com/apk/res/android"
++    xmlns:app="http://schemas.android.com/apk/res-auto"
++    xmlns:tools="http://schemas.android.com/tools"
++    android:layout_width="match_parent"
++    android:layout_height="match_parent"
++    android:orientation="vertical"
++    tools:context=".Calendar">
++    <LinearLayout
++
++        android:layout_width="wrap_content"
++        android:layout_height="wrap_content"
++        android:layout_gravity="center"
++        android:orientation="horizontal"
++        android:layout_marginBottom="20dp"
++
++        android:layout_marginTop="20dp">
++
++
++        <Button
++            android:layout_width="0dp"
++            android:layout_height="wrap_content"
++            android:layout_weight="1"
++            android:text="@string/back"
++            android:textColor="@color/blue"
++            android:background="@null"
++            android:textStyle="bold"
++            android:onClick="previousMonthAction"
++            android:textSize="20sp" />
++
++        <TextView
++
++            android:id="@+id/mothYearTV"
++            android:layout_width="0dp"
++            android:layout_weight="2"
++            android:layout_height="wrap_content"
++            android:text="feb 2021"
++            android:textSize="20sp"
++            android:textAlignment="center"
++            android:textColor="@color/black"
++
++
++            />
++        <Button
++            android:layout_width="0dp"
++            android:layout_height="wrap_content"
++            android:layout_weight="1"
++            android:text="@string/forward"
++            android:textColor="@color/blue"
++            android:background="@null"
++            android:textStyle="bold"
++            android:onClick="nextMonthAction"
++            android:textSize="20sp" />
++
++
++
++    </LinearLayout>
++    <LinearLayout
++        android:layout_width="match_parent"
++        android:layout_height="wrap_content"
++        android:orientation="horizontal">
++        <TextView
++            android:layout_width="0dp"
++            android:layout_height="wrap_content"
++            android:layout_weight="1"
++            android:text="SUN"
++            android:textColor="@color/gray"
++            android:textAlignment="center"
++            android:textSize="16sp"/>
++        <TextView
++            android:layout_width="0dp"
++            android:layout_height="wrap_content"
++            android:layout_weight="1"
++            android:text="MON"
++            android:textColor="@color/gray"
++            android:textAlignment="center"
++            android:textSize="16sp"/>
++        <TextView
++            android:layout_width="0dp"
++            android:layout_height="wrap_content"
++            android:layout_weight="1"
++            android:text="TUE"
++            android:textColor="@color/gray"
++            android:textAlignment="center"
++            android:textSize="16sp"/>
++        <TextView
++            android:layout_width="0dp"
++            android:layout_height="wrap_content"
++            android:layout_weight="1"
++            android:text="WED"
++            android:textColor="@color/gray"
++            android:textAlignment="center"
++            android:textSize="16sp"/>
++        <TextView
++            android:layout_width="0dp"
++            android:layout_height="wrap_content"
++            android:layout_weight="1"
++            android:text="THUR"
++            android:textColor="@color/gray"
++            android:textAlignment="center"
++            android:textSize="16sp"/>
++        <TextView
++            android:layout_width="0dp"
++            android:layout_height="wrap_content"
++            android:layout_weight="1"
++            android:text="FRI"
++            android:textColor="@color/gray"
++            android:textAlignment="center"
++            android:textSize="16sp"/>
++        <TextView
++            android:layout_width="0dp"
++            android:layout_height="wrap_content"
++            android:layout_weight="1"
++            android:text="SAT"
++            android:textColor="@color/gray"
++            android:textAlignment="center"
++            android:textSize="16sp"/>
++    </LinearLayout>
++    <androidx.recyclerview.widget.RecyclerView
++        android:id="@+id/calendarRecycler"
++        android:layout_width="match_parent"
++        android:layout_height="match_parent"
++        />
++</LinearLayout>
+\ No newline at end of file
+Index: app/src/main/java/com/example/savingdays/Calendar.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/example/savingdays/Calendar.java	(date 1618760814443)
++++ app/src/main/java/com/example/savingdays/Calendar.java	(date 1618760814443)
+@@ -0,0 +1,100 @@
++package com.example.savingdays;
++
++
++import androidx.annotation.RequiresApi;
++import androidx.appcompat.app.AppCompatActivity;
++import androidx.recyclerview.widget.GridLayoutManager;
++import androidx.recyclerview.widget.RecyclerView;
++
++import android.os.Build;
++import android.os.Bundle;
++
++import android.view.View;
++import android.widget.TextView;
++import android.widget.Toast;
++
++import java.time.LocalDate;
++import java.time.YearMonth;
++import java.time.format.DateTimeFormatter;
++import java.util.ArrayList;
++import java.util.Formatter;
++
++public class Calendar extends AppCompatActivity implements CalendarAdapter.OnItemListener {
++
++    private TextView monthYearText;
++    private RecyclerView calendarRecyclerView;
++    private LocalDate selectedDate;
++
++    @RequiresApi(api = Build.VERSION_CODES.O)
++    @Override
++    public void onCreate(Bundle savedInstanceState) {
++        super.onCreate(savedInstanceState);
++        setContentView(R.layout.activity_calendar);
++        initwidgets();
++        selectedDate=LocalDate.now();
++        setMonthView();
++    }
++
++
++
++    private void initwidgets() {
++        calendarRecyclerView=findViewById(R.id.calendarRecycler);
++        monthYearText=findViewById(R.id.mothYearTV);
++    }
++    @RequiresApi(api = Build.VERSION_CODES.O)
++    private void setMonthView() {
++        monthYearText.setText(monthYearFromDate(selectedDate));
++        ArrayList<String> daysInMonth=daysInMonthArray(selectedDate);
++    }
++
++        @RequiresApi(api = Build.VERSION_CODES.O)
++        private ArrayList<String> daysInMonthArray(LocalDate date) {
++        ArrayList<String> daysInMonthArray=new ArrayList<>();
++        YearMonth yearMonth=YearMonth.from(date);
++        int daysInMonth =yearMonth.lengthOfMonth();
++        LocalDate firstofMonth =selectedDate.withDayOfMonth(1);
++        int dayOfweek=firstofMonth.getDayOfWeek().getValue();
++            for (int i=1 ; i<=42; i++)
++            {
++                if (i<=dayOfweek||i>daysInMonth+dayOfweek)
++                {
++                    daysInMonthArray.add("");
++                }
++                else
++                {
++                    daysInMonthArray.add(String.valueOf(i - dayOfweek));
++                }
++            }
++            return daysInMonthArray;
++    }
++
++    @RequiresApi(api = Build.VERSION_CODES.O)
++    private String monthYearFromDate(LocalDate date) {
++        DateTimeFormatter formatter =DateTimeFormatter.ofPattern("MMMM yyyy");
++        return  date.format(formatter);
++    }
++
++
++    @RequiresApi(api = Build.VERSION_CODES.O)
++    public void previousMonthAction(View view) {
++        selectedDate=selectedDate.minusMonths(1);
++        setMonthView();
++    }
++
++    @RequiresApi(api = Build.VERSION_CODES.O)
++    public void nextMonthAction(View view) {
++        selectedDate=selectedDate.plusMonths(1);
++        setMonthView();
++    }
++
++    @RequiresApi(api = Build.VERSION_CODES.O)
++    @Override
++    public void onItemClick(int position, String dayText)
++    {
++        if (!dayText.equals("")){
++            String message = "Selected Date" +dayText+" "+monthYearFromDate(selectedDate);
++            Toast.makeText(this,message,Toast.LENGTH_LONG).show();
++        }
++    }
++
++}
+Index: app/src/main/res/layout/activity_calendar_cell.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/layout/activity_calendar_cell.xml	(date 1618756678099)
++++ app/src/main/res/layout/activity_calendar_cell.xml	(date 1618756678099)
+@@ -0,0 +1,21 @@
++<?xml version="1.0" encoding="utf-8"?>
++<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
++
++    android:layout_width="match_parent"
++    android:layout_height="match_parent"
++    xmlns:app="http://schemas.android.com/apk/res-auto">
++
++    <TextView
++        android:layout_width="wrap_content"
++        android:layout_height="wrap_content"
++        android:id="@+id/cellDayText"
++        android:text="1"
++        android:textSize="20sp"
++        android:textColor="@color/black"
++        app:layout_constraintBottom_toBottomOf="parent"
++        app:layout_constraintTop_toTopOf="parent"
++        app:layout_constraintLeft_toLeftOf="parent"
++        app:layout_constraintLeft_toRightOf="parent"
++        app:layout_constraintVertical_bias="0.25"
++        />
++</androidx.constraintlayout.widget.ConstraintLayout>
+\ No newline at end of file
