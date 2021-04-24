@@ -38,6 +38,7 @@ public class LoginActivity extends AppCompatActivity {
     private FirebaseAuth firebaseAuth;
 
     private static final String TAG = "GOOGLE_SIGN_IN_TAG";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,6 +55,7 @@ public class LoginActivity extends AppCompatActivity {
 
         //init firebase auth
         firebaseAuth = FirebaseAuth.getInstance();
+        checkUser();
 
         //Google SignInButton: Click to begin Google SignIn
         binding.googleSignInBtn.setOnClickListener(new View.OnClickListener() {
@@ -66,6 +68,17 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
     }
+
+    private void checkUser() {
+        //if user is already signed in then go to profile activity
+        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+        if (firebaseUser != null){
+            Log.d(TAG, "checkUser: Already logged in");
+            startActivity(new Intent(this, ProfileActivity.class));
+            finish();
+        }
+    }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -117,6 +130,9 @@ public class LoginActivity extends AppCompatActivity {
                             Toast.makeText(LoginActivity.this, "Existing user...\n"+email, Toast.LENGTH_SHORT).show();
                         }
 
+                        //start profile activity
+                        startActivity(new Intent(LoginActivity.this, ProfileActivity.class));
+                        finish();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
