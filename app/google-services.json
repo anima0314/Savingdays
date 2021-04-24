@@ -1,20 +1,20 @@
 {
   "project_info": {
-    "project_number": "1059104637997",
-    "project_id": "login-c06ac",
-    "storage_bucket": "login-c06ac.appspot.com"
+    "project_number": "646376567308",
+    "project_id": "savingdays-2058b",
+    "storage_bucket": "savingdays-2058b.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1059104637997:android:b442af6faf6d002fc9e4a4",
+        "mobilesdk_app_id": "1:646376567308:android:ce711b233d9e018754f429",
         "android_client_info": {
           "package_name": "com.example.savingdays"
         }
       },
       "oauth_client": [
         {
-          "client_id": "1059104637997-b43su46thn5ea6ul09lvepr1c9hqif9a.apps.googleusercontent.com",
+          "client_id": "646376567308-6c9hcto3gvj98f7aaqfdf5r9isbq4khk.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.example.savingdays",
@@ -22,20 +22,20 @@
           }
         },
         {
-          "client_id": "1059104637997-qufc8ir84o5a7opg7o9r0j7gokk24ntf.apps.googleusercontent.com",
+          "client_id": "646376567308-bot0le6290voap17pvjlqbptk7jkiab5.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCCNas0xojXtDNY0dtpGgzzGtzVUDuuANE"
+          "current_key": "AIzaSyBEkZDHVnPNJCkDl7aP-RGMnNQ9x7qSlhM"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "1059104637997-qufc8ir84o5a7opg7o9r0j7gokk24ntf.apps.googleusercontent.com",
+              "client_id": "646376567308-bot0le6290voap17pvjlqbptk7jkiab5.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
