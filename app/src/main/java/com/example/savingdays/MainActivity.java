@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 
@@ -38,7 +39,8 @@ public class MainActivity extends AppCompatActivity {
                         setFrag(1);
                         break;
                     case R.id.action_check:
-                        setFrag(2);
+                        Intent intent = new Intent(getApplicationContext(), ToDoActivity.class);
+                        startActivity(intent);
                         break;
                     case R.id.action_store:
                         setFrag(3);
