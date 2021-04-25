@@ -9,7 +9,7 @@
         android:layout_height="wrap_content"
         android:background="@null"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        android:hint="@string/new_task" />
+        android:hint="@string/할일입력" />
 
     <Button
         android:id="@+id/newTaskButton"
@@ -19,7 +19,7 @@
         android:textSize="16sp"
         android:layout_alignParentEnd="true"
         android:background="@android:color/transparent"
-        android:text="@string/save"
+        android:text="@string/저장"
         android:textAllCaps="false"
         android:textColor="@android:color/darker_gray" />
 

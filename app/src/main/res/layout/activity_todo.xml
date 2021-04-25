@@ -14,7 +14,7 @@
         android:layout_marginBottom="16dp"
         android:layout_marginTop="16dp"
         android:textSize="32sp"
-        android:text="@string/tasks" />
+        android:text="@string/체크리스트" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/tasksRecyclerView"
@@ -32,7 +32,7 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         android:layout_margin="32dp"
-        android:backgroundTint="@android:color/holo_green_dark"
+        android:backgroundTint="@color/savingdays"
         android:src="@drawable/ic_baseline_add_24" />
 
 </RelativeLayout>

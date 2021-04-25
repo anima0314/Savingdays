@@ -40,7 +40,7 @@ public class ToDoActivity extends AppCompatActivity implements DialogCloseListen
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_todo);
         Objects.requireNonNull(getSupportActionBar()).hide();
 
         db = new DatabaseHandler(this);
