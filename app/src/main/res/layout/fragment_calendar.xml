@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".CalendarActivity">
+
+    <!-- 헤더 -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp">
+
+        <ImageButton
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="10dp"
+            android:background="@drawable/ic_person"
+            android:contentDescription="@string/app_name" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:text="@string/saving_days"
+            android:textColor="@color/gray"
+            android:textSize="22sp"
+            android:textStyle="bold" />
+
+        <ImageButton
+            android:id="@+id/ibtnAdd"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/ic_add"
+            android:backgroundTint="@color/green"
+            android:contentDescription="@string/app_name" />
+
+    </RelativeLayout>
+    <!-- 끝 : 헤더 -->
+
+    <!-- 가로선 -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_marginBottom="10dp"
+        android:background="#DDD" />
+
+    <!-- 달 변경 레이아웃 -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginBottom="4dp"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/ibtnPrevMonth"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:background="@drawable/ic_left"
+            android:backgroundTint="@color/gray"
+            android:contentDescription="@string/app_name" />
+
+        <TextView
+            android:id="@+id/txtSelectedMonth"
+            android:layout_width="180dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:gravity="center_horizontal"
+            android:text="March 2021"
+            android:textColor="@color/gray"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            tools:ignore="HardcodedText" />
+
+        <ImageButton
+            android:id="@+id/ibtnNextMonth"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:background="@drawable/ic_right"
+            android:backgroundTint="@color/gray"
+            android:contentDescription="@string/app_name" />
+
+    </LinearLayout>
+    <!-- 끝 : 달 변경 레이아웃 -->
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <include
+            android:id="@+id/calendar_grid"
+            layout="@layout/calendar_grid"
+            android:layout_width="match_parent"
+            android:layout_height="280dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="58dp"
+            android:layout_marginEnd="20dp" />
+
+        <!-- 달력 레이아웃 -->
+        <CalendarView
+            android:id="@+id/calendar"
+            android:layout_width="match_parent"
+            android:layout_height="340dp" />
+
+        <!-- 버튼 레이아웃 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:background="@color/white"
+            android:orientation="horizontal">
+
+            <!-- 일정 버튼 -->
+            <Button
+                android:id="@+id/btnSchedule"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="30dp"
+                android:layout_marginEnd="16dp"
+                android:layout_weight="1"
+                android:backgroundTint="@color/green"
+                android:text="@string/schedule"
+                android:textColor="@color/white"
+                tools:ignore="ButtonStyle" />
+
+            <!-- 음식 버튼 -->
+            <Button
+                android:id="@+id/btnFood"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:layout_weight="1"
+                android:backgroundTint="@color/white"
+                android:text="@string/food"
+                android:textColor="@color/gray"
+                tools:ignore="ButtonStyle" />
+
+            <!-- 소모품 버튼 -->
+            <Button
+                android:id="@+id/btnProduct"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="30dp"
+                android:layout_weight="1"
+                android:backgroundTint="@color/white"
+                android:text="@string/product"
+                android:textColor="@color/gray"
+                tools:ignore="ButtonStyle" />
+
+        </LinearLayout>
+        <!-- 끝 : 버튼 레이아웃 -->
+
+    </FrameLayout>
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        app:cardBackgroundColor="#EEE"
+        app:cardCornerRadius="8dp">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/txtNoItems"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:padding="16dp"
+                android:text="@string/please_add_new_item" />
+
+            <!-- 리사이클러뷰 -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="16dp"
+                android:paddingTop="16dp"
+                android:paddingEnd="16dp"
+                android:paddingBottom="6dp" />
+
+        </FrameLayout>
+
+    </androidx.cardview.widget.CardView>
+
+</LinearLayout>
