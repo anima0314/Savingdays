@@ -1,167 +1,413 @@
 package com.example.savingdays;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.annotation.Nullable;
+import androidx.core.content.res.ResourcesCompat;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-import android.annotation.SuppressLint;
-import android.content.ContentValues;
-import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CalendarView;
-import android.widget.EditText;
+import android.widget.GridLayout;
+import android.widget.GridView;
+import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import com.example.savingdays.ProductAdapter;
+import com.example.savingdays.ScheduleAdapter;
+import com.example.savingdays.SQLiteHelper;
+import com.example.savingdays.Product;
+import com.example.savingdays.Schedule;
 
-public class CalendarActivity extends AppCompatActivity {
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
-    public String fname=null;
-    public String str=null;
-    public CalendarView calendarView;
-    public Button cha_Btn,del_Btn,save_Btn;
-    public TextView diaryTextView,textView2,textView3;
-    public EditText contextEditText;
+
+public class CalendarActivity extends Fragment implements
+        View.OnClickListener, CalendarView.OnDateChangeListener {
+
+    public static final int REQUEST_ADD = 100;          // 추가하기 액티비티 요청코드
+
+    public static final int CATEGORY_SCHEDULE = 100;    // 일정 카테고리
+    public static final int CATEGORY_FOOD = 101;        // 음식 카테고리
+    public static final int CATEGORY_PRODUCT = 102;     // 소모품 카테고리
+
+    private int mCategory = CATEGORY_SCHEDULE;          // 현재 선택된 카테고리
+    private Button mScheduleButton;                     // 카테고리 버튼
+    private Button mFoodButton;
+    private Button mProductButton;
+
+    private LocalDate mSelectedDate;                    // 현재 선택된 날짜
+    private CalendarView mCalendarView;                 // 달력 뷰
+    private TextView mSelectedMonthText;                // 현재 달 텍스트뷰
+    private GridLayout mCalendarGrid;
+
+    private RecyclerView mRecycler;                     // 리사이클러뷰
+    private ScheduleAdapter mScheduleAdapter;
+    private ProductAdapter mProductAdapter;
+    private List<Schedule> mScheduleList;
+    private List<Product> mProductList;
+    private TextView mNoItemsText;
+
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        View view = inflater.inflate(R.layout.fragment_calendar, container, false);
 
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.calendar);
-        calendarView=findViewById(R.id.calendarView);
-        diaryTextView=findViewById(R.id.diaryTextView);
-        save_Btn=findViewById(R.id.save_Btn);
-        del_Btn=findViewById(R.id.del_Btn);
-        cha_Btn=findViewById(R.id.cha_Btn);
-        textView2=findViewById(R.id.textView2);
-        textView3=findViewById(R.id.textView3);
-        contextEditText=findViewById(R.id.contextEditText);
-        //로그인 및 회원가입 엑티비티에서 이름을 받아옴
-        Intent intent=getIntent();
-        String name=intent.getStringExtra("userName");
-        final String userID=intent.getStringExtra("userID");
-        textView3.setText("CalendarActivity");
+        mNoItemsText = view.findViewById(R.id.txtNoItems);
 
-        calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
-            @Override
-            public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
-                diaryTextView.setVisibility(View.VISIBLE);
-                save_Btn.setVisibility(View.VISIBLE);
-                contextEditText.setVisibility(View.VISIBLE);
-                textView2.setVisibility(View.INVISIBLE);
-                cha_Btn.setVisibility(View.INVISIBLE);
-                del_Btn.setVisibility(View.INVISIBLE);
-                diaryTextView.setText(String.format("%d / %d / %d",year,month+1,dayOfMonth));
-                contextEditText.setText("");
-                checkDay(year,month,dayOfMonth,userID);
-            }
+        // 버튼에 리스너를 설정한다
+        mScheduleButton = view.findViewById(R.id.btnSchedule);
+        mFoodButton = view.findViewById(R.id.btnFood);
+        mProductButton = view.findViewById(R.id.btnProduct);
+        mScheduleButton.setOnClickListener(this);
+        mFoodButton.setOnClickListener(this);
+        mProductButton.setOnClickListener(this);
+
+        ImageButton addIButton = view.findViewById(R.id.ibtnAdd);
+        ImageButton prevMonthIButton = view.findViewById(R.id.ibtnPrevMonth);
+        ImageButton nextMonthIButton = view.findViewById(R.id.ibtnNextMonth);
+        addIButton.setOnClickListener(this);
+        prevMonthIButton.setOnClickListener(this);
+        nextMonthIButton.setOnClickListener(this);
+
+        // 카테고리 버튼 초기화
+        updateCategoryButtons();
+
+        // 날짜 UI 초기화
+        mCalendarView = view.findViewById(R.id.calendar);
+        mCalendarGrid = view.findViewById(R.id.calendar_grid);
+        mCalendarView.setOnDateChangeListener(this);
+        mSelectedDate = LocalDate.now();
+
+        mSelectedMonthText = view.findViewById(R.id.txtSelectedMonth);
+        updateSelectedMonthUI();
+        updateCalendarGrid();
+
+        // 리사이클러뷰 초기화
+        buildRecycler(view);
+        updateRecycler();
+
+        return view;
+    }
+
+    // 카테고리 버튼 (일정, 음식, 소모품) 을 업데이트한다
+
+    private void updateCategoryButtons() {
+
+        int gray = getResources().getColor(R.color.gray, null);
+        int green = getResources().getColor(R.color.green, null);
+
+        mScheduleButton.setBackgroundColor(Color.WHITE);
+        mScheduleButton.setTextColor(gray);
+        mFoodButton.setBackgroundColor(Color.WHITE);
+        mFoodButton.setTextColor(gray);
+        mProductButton.setBackgroundColor(Color.WHITE);
+        mProductButton.setTextColor(gray);
+
+        switch (mCategory) {
+            case CATEGORY_SCHEDULE:
+                mScheduleButton.setBackgroundColor(green);
+                mScheduleButton.setTextColor(Color.WHITE);
+                break;
+            case CATEGORY_FOOD:
+                mFoodButton.setBackgroundColor(green);
+                mFoodButton.setTextColor(Color.WHITE);
+                break;
+            case CATEGORY_PRODUCT:
+                mProductButton.setBackgroundColor(green);
+                mProductButton.setTextColor(Color.WHITE);
+                break;
+        }
+    }
+
+    // 리사이클러뷰를 초기화한다
+
+    private void buildRecycler(View view) {
+
+        mRecycler = view.findViewById(R.id.recycler);
+        mRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        mScheduleList = new ArrayList<>();
+        mScheduleAdapter = new ScheduleAdapter(mScheduleList);
+        mScheduleAdapter.setOnItemClickListener(position -> {
+            Schedule schedule = mScheduleList.get(position);
+            new AlertDialog.Builder(getContext())
+                    .setTitle("일정 수정")
+                    .setPositiveButton("수정하기", (dialog, which) -> {
+                        startAddActivity(schedule.getId());
+                    })
+                    .setNegativeButton("삭제하기", (dialog, which) -> {
+                        SQLiteHelper.getInstance(getContext())
+                                .deleteSchedule(schedule.getId());
+                        Toast.makeText(getContext(), "삭제가 완료되었습니다.", Toast.LENGTH_SHORT).show();
+                        updateRecycler();
+                        updateCalendarGrid();
+                    })
+                    .setNeutralButton("취소", null)
+                    .show();
         });
-        save_Btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                saveDiary(fname);
-                str=contextEditText.getText().toString();
-                textView2.setText(str);
-                save_Btn.setVisibility(View.INVISIBLE);
-                cha_Btn.setVisibility(View.VISIBLE);
-                del_Btn.setVisibility(View.VISIBLE);
-                contextEditText.setVisibility(View.INVISIBLE);
-                textView2.setVisibility(View.VISIBLE);
 
-            }
+        mProductList = new ArrayList<>();
+        mProductAdapter = new ProductAdapter(mProductList);
+        mProductAdapter.setOnItemClickListener(position -> {
+            Product product = mProductList.get(position);
+            new AlertDialog.Builder(getContext())
+                    .setTitle("제품 수정")
+                    .setPositiveButton("수정하기", (dialog, which) -> startAddActivity(product.getId()))
+                    .setNegativeButton("삭제하기", (dialog, which) -> {
+                        SQLiteHelper.getInstance(getContext())
+                                .deleteProduct(product.getId());
+                        Toast.makeText(getContext(), "삭제가 완료되었습니다.", Toast.LENGTH_SHORT).show();
+                        updateRecycler();
+                        updateCalendarGrid();
+                    })
+                    .setNeutralButton("취소", null)
+                    .show();
         });
     }
 
-    public void  checkDay(int cYear,int cMonth,int cDay,String userID){
-        fname=""+userID+cYear+"-"+(cMonth+1)+""+"-"+cDay+".txt";//저장할 파일 이름설정
-        FileInputStream fis=null;//FileStream fis 변수
+    // 리사이클러뷰를 업데이트한다
 
-        try{
-            fis=openFileInput(fname);
+    private void updateRecycler() {
 
-            byte[] fileData=new byte[fis.available()];
-            fis.read(fileData);
-            fis.close();
+        boolean isEmpty = true;
 
-            str=new String(fileData);
+        switch (mCategory) {
+            case CATEGORY_SCHEDULE:
+                // 리사이클러뷰에 일정 목록을 띄운다
+                mRecycler.setAdapter(mScheduleAdapter);
+                mScheduleList.clear();
+                mScheduleList.addAll(SQLiteHelper.getInstance(getContext())
+                        .getScheduleByDate(mSelectedDate));
+                isEmpty = mScheduleList.isEmpty();
+                break;
+            case CATEGORY_PRODUCT:
+                // 리사이클러뷰에 소모품 목록을 띄운다
+                mRecycler.setAdapter(mProductAdapter);
+                mProductList.clear();
+                mProductList.addAll(SQLiteHelper.getInstance(getContext())
+                        .getProductByDate(mSelectedDate));
+                isEmpty = mProductList.isEmpty();
+                break;
+        }
 
-            contextEditText.setVisibility(View.INVISIBLE);
-            textView2.setVisibility(View.VISIBLE);
-            textView2.setText(str);
+        // 항목이 없으면 문구를 보여준다
+        mNoItemsText.setVisibility(isEmpty ? View.VISIBLE : View.INVISIBLE);
+        mRecycler.setVisibility(isEmpty ? View.INVISIBLE : View.VISIBLE);
+    }
 
-            save_Btn.setVisibility(View.INVISIBLE);
-            cha_Btn.setVisibility(View.VISIBLE);
-            del_Btn.setVisibility(View.VISIBLE);
+    // 현재 달 UI 를 업데이트한다
+    private void updateSelectedMonthUI() {
 
-            cha_Btn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    contextEditText.setVisibility(View.VISIBLE);
-                    textView2.setVisibility(View.INVISIBLE);
-                    contextEditText.setText(str);
+        String strSelectedMonth = String.format(Locale.getDefault(),
+                "%s %d",
+                mSelectedDate.getMonth().toString(), mSelectedDate.getYear());
 
-                    save_Btn.setVisibility(View.VISIBLE);
-                    cha_Btn.setVisibility(View.INVISIBLE);
-                    del_Btn.setVisibility(View.INVISIBLE);
-                    textView2.setText(contextEditText.getText());
+        mSelectedMonthText.setText(strSelectedMonth);
+    }
+
+    // 달력 격자 업데이트 : 항목이 존재하는 달력 날짜 하이라이트
+
+    private void updateCalendarGrid() {
+
+        Drawable normal = ResourcesCompat.getDrawable(getResources(),
+                R.drawable.calendar_cell, null);
+        Drawable highlighted = ResourcesCompat.getDrawable(getResources(),
+                R.drawable.calendar_cell_highlighted, null);
+
+        // 모든 날짜 하이라이트 해제
+        for (int i = 0; i < 42; i++) {
+            View dayView = mCalendarGrid.getChildAt(7 + i);
+            dayView.setBackground(normal);
+        }
+
+        // 항목이 존재하는 날짜에만 하이라이트
+        LocalDate firstDate;
+        int firstPosition, maxDays;
+
+        switch (mCategory) {
+            case CATEGORY_SCHEDULE:
+                List<Schedule> scheduleList = SQLiteHelper.getInstance(getContext())
+                        .getScheduleByMonth(mSelectedDate);
+
+                firstDate = mSelectedDate.withDayOfMonth(1);
+                firstPosition = 7 + (firstDate.getDayOfWeek().getValue() % 7);
+                maxDays = mSelectedDate.getMonth().maxLength();
+
+                for (int i = 0; i < maxDays; i++) {
+                    LocalDate date = mSelectedDate.withDayOfMonth(i + 1);
+                    View dayView = mCalendarGrid.getChildAt(firstPosition + date.getDayOfMonth() - 1);
+
+                    for (Schedule schedule : scheduleList) {
+                        if (!date.isBefore(schedule.getStartDate())
+                                && !date.isAfter(schedule.getEndDate())) {
+                            dayView.setBackground(highlighted);
+                            break;
+                        }
+                    }
                 }
+                break;
+            case CATEGORY_PRODUCT:
+                List<Product> productList = SQLiteHelper.getInstance(getContext())
+                        .getProductByMonth(mSelectedDate);
 
-            });
-            del_Btn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    textView2.setVisibility(View.INVISIBLE);
-                    contextEditText.setText("");
-                    contextEditText.setVisibility(View.VISIBLE);
-                    save_Btn.setVisibility(View.VISIBLE);
-                    cha_Btn.setVisibility(View.INVISIBLE);
-                    del_Btn.setVisibility(View.INVISIBLE);
-                    removeDiary(fname);
+                firstDate = mSelectedDate.withDayOfMonth(1);
+                firstPosition = 7 + (firstDate.getDayOfWeek().getValue() % 7);
+                maxDays = mSelectedDate.getMonth().maxLength();
+
+                for (int i = 0; i < maxDays; i++) {
+                    LocalDate date = mSelectedDate.withDayOfMonth(i + 1);
+                    View dayView = mCalendarGrid.getChildAt(firstPosition + date.getDayOfMonth() - 1);
+
+                    for (Product product : productList) {
+                        if (!date.isBefore(product.getOpenDate())
+                                && !date.isAfter(product.getDueDate())) {
+                            dayView.setBackground(highlighted);
+                            break;
+                        }
+                    }
                 }
-            });
-            if(textView2.getText()==null){
-                textView2.setVisibility(View.INVISIBLE);
-                diaryTextView.setVisibility(View.VISIBLE);
-                save_Btn.setVisibility(View.VISIBLE);
-                cha_Btn.setVisibility(View.INVISIBLE);
-                del_Btn.setVisibility(View.INVISIBLE);
-                contextEditText.setVisibility(View.VISIBLE);
+                break;
+        }
+    }
+
+    // 버튼 클릭을 처리한다
+
+    @Override
+    public void onClick(View v) {
+
+        int id = v.getId();
+
+        if (id == R.id.btnSchedule) {
+            selectCategory(CATEGORY_SCHEDULE);
+        } else if (id == R.id.btnFood) {
+            selectCategory(CATEGORY_FOOD);
+        } else if (id == R.id.btnProduct) {
+            selectCategory(CATEGORY_PRODUCT);
+        } else if (id == R.id.ibtnAdd) {
+            startAddActivity(-1);
+        } else if (id == R.id.ibtnPrevMonth) {
+            moveToPrevMonth();
+        } else if (id == R.id.ibtnNextMonth) {
+            moveToNextMonth();
+        }
+    }
+
+    // 달력에서 특정 날짜를 선택했을 때
+
+    @Override
+    public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
+
+        mSelectedDate = LocalDate.of(year, month + 1, dayOfMonth);
+
+        // 리사이클러뷰 업데이트
+        updateRecycler();
+
+        // 선택된 달 UI 업데이트
+        updateSelectedMonthUI();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_ADD) {
+            // 추가 액티비티에서 추가가 실행된 경우 리사이클러뷰 업데이트
+            if (resultCode == Activity.RESULT_OK) {
+                updateRecycler();
+                updateCalendarGrid();
             }
-
-        }catch (Exception e){
-            e.printStackTrace();
         }
     }
-    @SuppressLint("WrongConstant")
-    public void removeDiary(String readDay){
-        FileOutputStream fos=null;
 
-        try{
-            fos=openFileOutput(readDay,MODE_NO_LOCALIZED_COLLATORS);
-            String content="";
-            fos.write((content).getBytes());
-            fos.close();
+    // 추가/수정하기 액티비티를 시작한다
 
-        }catch (Exception e){
-            e.printStackTrace();
+    private void startAddActivity(int id) {
+
+        Intent intent = null;
+
+        switch (mCategory) {
+            case CATEGORY_SCHEDULE:
+                intent = new Intent(getContext(), AddScheduleActivity.class);
+                if (id != -1) {
+                    intent.putExtra(AddScheduleActivity.EXTRA_SCHEDULE_ID, id);
+                }
+                intent.putExtra(AddScheduleActivity.EXTRA_SELECTED_DATE, mSelectedDate.toString());
+                break;
+            case CATEGORY_PRODUCT:
+                intent = new Intent(getContext(), AddProductActivity.class);
+                if (id != -1) {
+                    intent.putExtra(AddProductActivity.EXTRA_PRODUCT_ID, id);
+                }
+                intent.putExtra(AddProductActivity.EXTRA_SELECTED_DATE, mSelectedDate.toString());
+                break;
+        }
+
+        if (intent != null) {
+            startActivityForResult(intent, REQUEST_ADD);
         }
     }
-    @SuppressLint("WrongConstant")
-    public void saveDiary(String readDay){
-        FileOutputStream fos=null;
 
-        try{
-            fos=openFileOutput(readDay,MODE_NO_LOCALIZED_COLLATORS);
-            String content=contextEditText.getText().toString();
-            fos.write((content).getBytes());
-            fos.close();
-        }catch (Exception e){
-            e.printStackTrace();
-        }
+    // 카테고리 선택하기
+
+    private void selectCategory(int newCategory) {
+
+        mCategory = newCategory;
+        updateCategoryButtons();
+        updateRecycler();
+        updateCalendarGrid();
     }
+
+    // 이전 달로 이동
+
+    private void moveToPrevMonth() {
+
+        mSelectedDate = mSelectedDate.minusMonths(1);
+        mCalendarView.setDate(mSelectedDate.toEpochDay() * 86400 * 1000);
+
+        // 리사이클러뷰 업데이트
+        updateRecycler();
+
+        // 선택된 달 UI 업데이트
+        updateSelectedMonthUI();
+
+        updateCalendarGrid();
+    }
+
+    // 다음 달로 이동
+
+    private void moveToNextMonth() {
+
+        mSelectedDate = mSelectedDate.plusMonths(1);
+        mCalendarView.setDate(mSelectedDate.toEpochDay() * 86400 * 1000);
+
+        // 리사이클러뷰 업데이트
+        updateRecycler();
+
+        // 선택된 달 UI 업데이트
+        updateSelectedMonthUI();
+
+        updateCalendarGrid();
+    }
+
 }
+
+

@@ -8,7 +8,16 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Savingdays">
+        android:theme="@style/Theme.ScheduleApp">
+
+        <activity
+            android:name=".AddProductActivity"
+            android:label="@string/title_activity_add_product" />
+
+        <activity
+            android:name=".AddScheduleActivity"
+            android:label="@string/title_activity_add_schedule" />
+
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -16,7 +25,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".CalendarActivity"/>
+
     </application>
 
 </manifest>
