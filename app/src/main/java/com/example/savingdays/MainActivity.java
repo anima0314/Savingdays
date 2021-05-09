@@ -7,15 +7,21 @@ import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.UserInfo;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class MainActivity extends AppCompatActivity {
+    private static String TAG = "MainActivity";
 
     private BottomNavigationView bottomNavigationView; //바텀 네비게이션 뷰
     private FragmentManager fm;
@@ -36,10 +42,31 @@ public class MainActivity extends AppCompatActivity {
         if (user == null) {
             myStartActivity(SignUpActivity.class);
         } else {
-            for (UserInfo profile : user.getProviderData()) {
-                String name = profile.getDisplayName();
-            }
+            myStartActivity(MemberInitActivity.class);
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            DocumentReference docRef = db.collection("users").document(user.getUid());
+            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document==null){
+                            if (document.exists()) {
+                                Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+                            } else {
+                                Log.d(TAG, "No such document");
+                                myStartActivity(MemberInitActivity.class);
+                            }
+                        }
+                    } else {
+                        Log.d(TAG, "get failed with ", task.getException());
+                    }
+                }
+            });
+
+
         }
+
         findViewById(R.id.logoutButton).setOnClickListener(onClickListener);
 
         bottomNavigationView = findViewById(R.id.bottomNavi);
@@ -51,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
                         setFrag(0);
                         break;
                     case R.id.action_community:
-                        setFrag(1);
+                        myStartActivity(CommunityActivity.class);
                         break;
                     case R.id.action_check:
                         setFrag(2);

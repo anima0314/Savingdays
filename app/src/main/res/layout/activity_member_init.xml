@@ -5,11 +5,11 @@
     android:orientation="vertical">
 
     <TextView
-        android:id="@+id/textView"
+    android:id="@+id/textView"
         android:layout_width="match_parent"
         android:layout_height="200dp"
         android:gravity="center"
-        android:text="회원가입"
+        android:text="회원정보"
         android:textColor="#000000"
         android:textSize="24sp"
         android:textStyle="bold" />
@@ -21,44 +21,43 @@
         android:padding="10dp">
 
         <EditText
-            android:id="@+id/emailEditText"
+            android:id="@+id/nameEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp"
             android:ems="10"
-            android:hint="이메일"
-            android:inputType="textEmailAddress" />
+            android:hint="이름"
+            android:inputType="textPersonName" />
 
         <EditText
-            android:id="@+id/passwordEditText"
+            android:id="@+id/phonenNumberEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp"
             android:ems="10"
-            android:hint="비밀번호"
-            android:inputType="textPassword" />
+            android:hint="전화번호"
+            android:inputType="phone" />
 
         <EditText
-            android:id="@+id/passwordCheckEditText"
+            android:id="@+id/birthDayEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp"
             android:ems="10"
-            android:hint="비밀번호 확인"
-            android:inputType="textPassword" />
+            android:hint="생일"
+            android:inputType="date" />
 
-        <Button
-            android:id="@+id/signUpButton"
+        <EditText
+            android:id="@+id/nickNameEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="회원가입" />
+            android:ems="10"
+            android:hint="닉네임"
+            android:inputType="textPersonName" />
 
         <Button
-            android:id="@+id/gotoLoginButton"
+            android:id="@+id/checkButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="로그인" />
+            android:text="@string/check" />
+
     </LinearLayout>
 
 </LinearLayout>
-
