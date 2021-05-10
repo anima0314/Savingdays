@@ -24,8 +24,9 @@ import java.util.Locale;
 
 public class AddProductActivity extends AppCompatActivity implements View.OnClickListener {
 
-    public static final String EXTRA_PRODUCT_ID = "com.holy.scheduleapp.product_id";
-    public static final String EXTRA_SELECTED_DATE = "com.holy.scheduleapp.selected_date";
+    public static final String EXTRA_PRODUCT_ID = "com.exmaple.savingdays.product_id";
+    public static final String EXTRA_SELECTED_DATE = "com.example.savingdays.selected_date";
+    public static final String EXTRA_FOOD_ID ="com.exmaple.savingdays.food_id" ;
 
     private int mProductId;                 // 제품 ID (-1 이면 추가모드, 아니면 수정모드)
 

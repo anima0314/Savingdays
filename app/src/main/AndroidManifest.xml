@@ -17,6 +17,9 @@
         <activity
             android:name=".AddScheduleActivity"
             android:label="@string/title_activity_add_schedule" />
+        <activity
+            android:name=".AddFoodActivity"
+            android:label="@string/title_activity_add_food"/>
 
         <activity android:name=".MainActivity">
             <intent-filter>

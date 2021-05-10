@@ -11,7 +11,7 @@ import androidx.annotation.Nullable;
 
 import com.example.savingdays.Product;
 import com.example.savingdays.Schedule;
-
+import com.example.savingdays.Food;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +29,12 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     public static final String COLUMN_SCHEDULE_TITLE = "title";
     public static final String COLUMN_SCHEDULE_START_DATE = "startDate";
     public static final String COLUMN_SCHEDULE_END_DATE = "endDate";
-
+    // 음식 테이블의 정보
+    public static final String TABLE_FOODS = "food";
+    public static final String COLUMN_FOOD_ID = "id";
+    public static final String COLUMN_FOOD_TITLE = "title";
+    public static final String COLUMN_FOOD_OPEN_DATE = "openDate";
+    public static final String COLUMN_FOOD_DUE_DATE = "dueDate";
     // 제품 테이블의 정보
     public static final String TABLE_PRODUCTS = "products";
     public static final String COLUMN_PRODUCT_ID = "id";
@@ -67,6 +72,16 @@ public class SQLiteHelper extends SQLiteOpenHelper {
                 ")";
         db.execSQL(CREATE_SCHEDULES_TABLE);
 
+        // 초기화 : 데이터베이스에 음식 테이블을 생성한다.
+        String CREATE_FOOD_TABLE = "CREATE TABLE " + TABLE_FOODS +
+                "(" +
+                COLUMN_FOOD_ID + " INTEGER PRIMARY KEY, " +
+                COLUMN_FOOD_TITLE + " TEXT NOT NULL, " +
+                COLUMN_FOOD_OPEN_DATE + " TEXT NOT NULL, " +
+                COLUMN_FOOD_DUE_DATE + " TEXT NOT NULL" +
+                ")";
+        db.execSQL(CREATE_FOOD_TABLE);
+
         // 초기화 : 데이터베이스에 제품 테이블을 생성한다.
         String CREATE_PRODUCTS_TABLE = "CREATE TABLE " + TABLE_PRODUCTS +
                 "(" +
@@ -85,6 +100,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         // 기존의 데이터베이스 버전이 현재와 다르면 테이블을 지우고 빈 테이블 다시 만들기.
         if (oldVersion != newVersion) {
             db.execSQL("DROP TABLE IF EXISTS " + TABLE_SCHEDULES);
+            db.execSQL("DROP TABLE IF EXISTS " + TABLE_FOODS);
             db.execSQL("DROP TABLE IF EXISTS " + TABLE_PRODUCTS);
             onCreate(db);
         }
@@ -480,6 +496,194 @@ public class SQLiteHelper extends SQLiteOpenHelper {
             }
         }
         return productList;
+    }
+
+    // 음식 추가
+
+    public void addFood(Food food) {
+
+        // 쓰기용 DB 를 연다.
+        SQLiteDatabase db = getWritableDatabase();
+
+        // DB 입력 시작
+        db.beginTransaction();
+        try {
+            // 정보를 모두 values 객체에 입력한다
+            ContentValues values = new ContentValues();
+            values.put(COLUMN_FOOD_TITLE, food.getTitle());
+            values.put(COLUMN_FOOD_OPEN_DATE, food.getOpenDate().toString());
+            values.put(COLUMN_FOOD_DUE_DATE, food.getDueDate().toString());
+
+            // 데이터베이스에 values 를 입력한다.
+            db.insertOrThrow(TABLE_FOODS, null, values);
+            db.setTransactionSuccessful();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            db.endTransaction();
+        }
+    }
+
+    // 음식 조회
+
+    public Food getFood(int id) {
+
+        Food food = null;
+
+        // 읽기용 DB 열기
+        SQLiteDatabase db = getReadableDatabase();
+
+        // 데이터베이스의 테이블을 가리키는 커서를 가져온다.
+        String SELECT_FOODS = "SELECT * FROM " + TABLE_FOODS
+                + " WHERE " + COLUMN_FOOD_ID + " = " + id;
+        Cursor cursor = db.rawQuery(SELECT_FOODS, null);
+
+        try {
+            if (cursor.moveToFirst()) {
+
+                // 커서를 움직이면서 테이블의 정보들을 가져온다.
+                String title = cursor.getString(cursor.getColumnIndex(COLUMN_FOOD_TITLE));
+
+                String strOpenDate = cursor.getString(cursor.getColumnIndex(COLUMN_FOOD_OPEN_DATE));
+                String strDueDate = cursor.getString(cursor.getColumnIndex(COLUMN_FOOD_DUE_DATE));
+
+                // 정보로 객체를 만들어 리스트에 추가한다.
+                food = new Food(
+                        id, title, LocalDate.parse(strOpenDate), LocalDate.parse(strDueDate));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
+            }
+        }
+        return food;
+    }
+
+    public List<Food> getFoodByDate(LocalDate date) {
+
+        List<Food> foodList = new ArrayList<>();
+
+        // 읽기용 DB 열기
+        SQLiteDatabase db = getReadableDatabase();
+
+        // 데이터베이스의 테이블을 가리키는 커서를 가져온다.
+        String SELECT_FOODS =
+                "SELECT * FROM " + TABLE_FOODS
+                        + " WHERE " + COLUMN_FOOD_OPEN_DATE + " <= '" + date.toString() + "'"
+                        + " AND " + COLUMN_FOOD_DUE_DATE + " >= '" + date.toString() + "'";
+        Cursor cursor = db.rawQuery(SELECT_FOODS, null);
+
+        try {
+            if (cursor.moveToFirst()) {
+                do {
+                    // 커서를 움직이면서 테이블의 정보들을 가져온다.
+                    int id = cursor.getInt(cursor.getColumnIndex(COLUMN_FOOD_ID));
+                    String title = cursor.getString(cursor.getColumnIndex(COLUMN_FOOD_TITLE));
+
+                    String strOpenDate = cursor.getString(cursor.getColumnIndex(COLUMN_FOOD_OPEN_DATE));
+                    String strDueDate = cursor.getString(cursor.getColumnIndex(COLUMN_FOOD_DUE_DATE));
+
+                    // 정보로 객체를 만들어 리스트에 추가한다.
+                    Food food = new Food(
+                            id, title, LocalDate.parse(strOpenDate), LocalDate.parse(strDueDate));
+                    foodList.add(food);
+
+                    // 테이블 끝에 도달할 때까지 실시한다.
+                } while (cursor.moveToNext());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
+            }
+        }
+        return foodList;
+    }
+
+    // 음식 업데이트
+
+    public void updateFood(Food food) {
+
+        // 쓰기용 DB 얻기
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        // 업데이트를 위해 values 를 만든다
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_FOOD_TITLE, food.getTitle());
+        values.put(COLUMN_FOOD_OPEN_DATE, food.getOpenDate().toString());
+        values.put(COLUMN_FOOD_DUE_DATE, food.getDueDate().toString());
+
+        // 데이터베이스의 id 위치에 values 를 입력하여 업데이트한다.
+        db.update(TABLE_FOODS, values, COLUMN_FOOD_ID + " = ?",
+                new String[]{String.valueOf(food.getId())});
+    }
+
+    // 음식 삭제
+
+    public void deleteFood(int id) {
+
+        // 쓰기용 DB 열기
+        SQLiteDatabase db = getWritableDatabase();
+
+        db.beginTransaction();
+        try {
+            // 데이터베이스에서 주어진 id를 가진 정보를 삭제한다.
+            db.delete(TABLE_FOODS,
+                    COLUMN_FOOD_ID + "=?",
+                    new String[]{String.valueOf(id)});
+            db.setTransactionSuccessful();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            db.endTransaction();
+        }
+    }
+
+    public List<Food> getFoodByMonth(LocalDate date) {
+
+        List<Food> foodList = new ArrayList<>();
+
+        // 읽기용 DB 열기
+        SQLiteDatabase db = getReadableDatabase();
+
+        // 데이터베이스의 테이블을 가리키는 커서를 가져온다.
+        String SELECT_FOODS =
+                "SELECT * FROM " + TABLE_FOODS;
+        Cursor cursor = db.rawQuery(SELECT_FOODS, null);
+
+        try {
+            if (cursor.moveToFirst()) {
+                do {
+                    int id = cursor.getInt(cursor.getColumnIndex(COLUMN_FOOD_ID));
+                    String title = cursor.getString(cursor.getColumnIndex(COLUMN_FOOD_TITLE));
+
+                    String strOpenDate = cursor.getString(cursor.getColumnIndex(COLUMN_FOOD_OPEN_DATE));
+                    String strDueDate = cursor.getString(cursor.getColumnIndex(COLUMN_FOOD_DUE_DATE));
+
+                    // 정보로 객체를 만들어 검사후 리스트에 추가한다.
+                    Food food = new Food(
+                            id, title, LocalDate.parse(strOpenDate), LocalDate.parse(strDueDate));
+
+                    if (food.getOpenDate().getMonthValue() == date.getMonthValue()
+                            || food.getDueDate().getMonthValue() == date.getMonthValue()) {
+                        foodList.add(food);
+                    }
+
+                    // 테이블 끝에 도달할 때까지 실시한다.
+                } while (cursor.moveToNext());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
+            }
+        }
+        return foodList;
     }
 
 

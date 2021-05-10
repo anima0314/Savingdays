@@ -28,8 +28,12 @@ import android.widget.Toast;
 
 import com.example.savingdays.ProductAdapter;
 import com.example.savingdays.ScheduleAdapter;
+import com.example.savingdays.FoodAdapter;
+
 import com.example.savingdays.SQLiteHelper;
 import com.example.savingdays.Product;
+import com.example.savingdays.Food;
+
 import com.example.savingdays.Schedule;
 
 import java.time.LocalDate;
@@ -60,7 +64,10 @@ public class CalendarActivity extends Fragment implements
     private RecyclerView mRecycler;                     // 리사이클러뷰
     private ScheduleAdapter mScheduleAdapter;
     private ProductAdapter mProductAdapter;
+    private FoodAdapter mFoodAdapter;
+
     private List<Schedule> mScheduleList;
+    private List<Food> mFoodList;
     private List<Product> mProductList;
     private TextView mNoItemsText;
 
@@ -164,7 +171,25 @@ public class CalendarActivity extends Fragment implements
                     .setNeutralButton("취소", null)
                     .show();
         });
-
+        mFoodList = new ArrayList<>();
+        mFoodAdapter = new FoodAdapter(mFoodList);
+        mFoodAdapter.setOnItemClickListener(position -> {
+            Food food = mFoodList.get(position);
+            new AlertDialog.Builder(getContext())
+                    .setTitle("음식 소비기한 수정")
+                    .setPositiveButton("수정하기", (dialog, which) -> {
+                        startAddActivity(food.getId());
+                    })
+                    .setNegativeButton("삭제하기", (dialog, which) -> {
+                        SQLiteHelper.getInstance(getContext())
+                                .deleteFood(food.getId());
+                        Toast.makeText(getContext(), "삭제가 완료되었습니다.", Toast.LENGTH_SHORT).show();
+                        updateRecycler();
+                        updateCalendarGrid();
+                    })
+                    .setNeutralButton("취소", null)
+                    .show();
+        });
         mProductList = new ArrayList<>();
         mProductAdapter = new ProductAdapter(mProductList);
         mProductAdapter.setOnItemClickListener(position -> {
@@ -198,6 +223,14 @@ public class CalendarActivity extends Fragment implements
                 mScheduleList.addAll(SQLiteHelper.getInstance(getContext())
                         .getScheduleByDate(mSelectedDate));
                 isEmpty = mScheduleList.isEmpty();
+                break;
+            case CATEGORY_FOOD:
+                // 리사이클러뷰에 일정 목록을 띄운다
+                mRecycler.setAdapter(mFoodAdapter);
+                mFoodList.clear();
+                mFoodList.addAll(SQLiteHelper.getInstance(getContext())
+                        .getFoodByDate(mSelectedDate));
+                isEmpty = mFoodList.isEmpty();
                 break;
             case CATEGORY_PRODUCT:
                 // 리사이클러뷰에 소모품 목록을 띄운다
@@ -250,7 +283,7 @@ public class CalendarActivity extends Fragment implements
 
                 firstDate = mSelectedDate.withDayOfMonth(1);
                 firstPosition = 7 + (firstDate.getDayOfWeek().getValue() % 7);
-                maxDays = mSelectedDate.getMonth().maxLength();
+                maxDays = mSelectedDate.lengthOfMonth();
 
                 for (int i = 0; i < maxDays; i++) {
                     LocalDate date = mSelectedDate.withDayOfMonth(i + 1);
@@ -265,13 +298,34 @@ public class CalendarActivity extends Fragment implements
                     }
                 }
                 break;
+            case CATEGORY_FOOD:
+                List<Food> FoodList = SQLiteHelper.getInstance(getContext())
+                        .getFoodByMonth(mSelectedDate);
+
+                firstDate = mSelectedDate.withDayOfMonth(1);
+                firstPosition = 7 + (firstDate.getDayOfWeek().getValue() % 7);
+                maxDays = mSelectedDate.lengthOfMonth();
+
+                for (int i = 0; i < maxDays; i++) {
+                    LocalDate date = mSelectedDate.withDayOfMonth(i + 1);
+                    View dayView = mCalendarGrid.getChildAt(firstPosition + date.getDayOfMonth() - 1);
+
+                    for (Food food : FoodList) {
+                        if (!date.isBefore(food.getOpenDate())
+                                && !date.isAfter(food.getDueDate())) {
+                            dayView.setBackground(highlighted);
+                            break;
+                        }
+                    }
+                }
+                break;
             case CATEGORY_PRODUCT:
                 List<Product> productList = SQLiteHelper.getInstance(getContext())
                         .getProductByMonth(mSelectedDate);
 
                 firstDate = mSelectedDate.withDayOfMonth(1);
                 firstPosition = 7 + (firstDate.getDayOfWeek().getValue() % 7);
-                maxDays = mSelectedDate.getMonth().maxLength();
+                maxDays = mSelectedDate.lengthOfMonth();
 
                 for (int i = 0; i < maxDays; i++) {
                     LocalDate date = mSelectedDate.withDayOfMonth(i + 1);
@@ -352,6 +406,13 @@ public class CalendarActivity extends Fragment implements
                 }
                 intent.putExtra(AddScheduleActivity.EXTRA_SELECTED_DATE, mSelectedDate.toString());
                 break;
+            case CATEGORY_FOOD:
+                intent = new Intent(getContext(), AddFoodActivity.class);
+                if (id != -1) {
+                    intent.putExtra(AddFoodActivity.EXTRA_FOOD_ID, id);
+                }
+                intent.putExtra(AddFoodActivity.EXTRA_SELECTED_DATE, mSelectedDate.toString());
+                break;
             case CATEGORY_PRODUCT:
                 intent = new Intent(getContext(), AddProductActivity.class);
                 if (id != -1) {
@@ -377,7 +438,6 @@ public class CalendarActivity extends Fragment implements
     }
 
     // 이전 달로 이동
-
     private void moveToPrevMonth() {
 
         mSelectedDate = mSelectedDate.minusMonths(1);
@@ -393,18 +453,13 @@ public class CalendarActivity extends Fragment implements
     }
 
     // 다음 달로 이동
-
     private void moveToNextMonth() {
-
         mSelectedDate = mSelectedDate.plusMonths(1);
         mCalendarView.setDate(mSelectedDate.toEpochDay() * 86400 * 1000);
-
         // 리사이클러뷰 업데이트
         updateRecycler();
-
         // 선택된 달 UI 업데이트
         updateSelectedMonthUI();
-
         updateCalendarGrid();
     }
 

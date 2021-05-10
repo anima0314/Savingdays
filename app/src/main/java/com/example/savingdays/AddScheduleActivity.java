@@ -20,8 +20,8 @@ import java.util.Locale;
 public class AddScheduleActivity extends AppCompatActivity
         implements View.OnClickListener {
 
-    public static final String EXTRA_SCHEDULE_ID = "com.holy.scheduleapp.schedule_id";
-    public static final String EXTRA_SELECTED_DATE = "com.holy.scheduleapp.selected_date";
+    public static final String EXTRA_SCHEDULE_ID = "com.example.savingdays.schedule_id";
+    public static final String EXTRA_SELECTED_DATE = "com.example.savingdays.selected_date";
 
     private int mScheduleId;                 // 일정 ID (-1 이면 추가모드, 아니면 수정모드)
 
