@@ -1,0 +1,130 @@
+Index: app/src/main/java/com/example/savingdays/CalendarActivity.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.savingdays;\r\n\r\nimport android.annotation.SuppressLint;\r\nimport android.app.Activity;\r\nimport android.app.AlertDialog;\r\nimport android.content.Intent;\r\nimport android.graphics.Color;\r\nimport android.graphics.drawable.Drawable;\r\nimport android.os.Bundle;\r\n\r\nimport androidx.annotation.NonNull;\r\nimport androidx.annotation.Nullable;\r\nimport androidx.core.content.res.ResourcesCompat;\r\nimport androidx.fragment.app.Fragment;\r\nimport androidx.recyclerview.widget.LinearLayoutManager;\r\nimport androidx.recyclerview.widget.RecyclerView;\r\n\r\nimport android.view.LayoutInflater;\r\nimport android.view.View;\r\nimport android.view.ViewGroup;\r\nimport android.widget.Button;\r\nimport android.widget.CalendarView;\r\nimport android.widget.GridLayout;\r\nimport android.widget.GridView;\r\nimport android.widget.ImageButton;\r\nimport android.widget.TextView;\r\nimport android.widget.Toast;\r\n\r\nimport com.example.savingdays.ProductAdapter;\r\nimport com.example.savingdays.ScheduleAdapter;\r\nimport com.example.savingdays.SQLiteHelper;\r\nimport com.example.savingdays.Product;\r\nimport com.example.savingdays.Schedule;\r\n\r\nimport java.time.LocalDate;\r\nimport java.util.ArrayList;\r\nimport java.util.List;\r\nimport java.util.Locale;\r\n\r\n\r\npublic class CalendarActivity extends Fragment implements\r\n        View.OnClickListener, CalendarView.OnDateChangeListener {\r\n\r\n    public static final int REQUEST_ADD = 100;          // 추가하기 액티비티 요청코드\r\n\r\n    public static final int CATEGORY_SCHEDULE = 100;    // 일정 카테고리\r\n    public static final int CATEGORY_FOOD = 101;        // 음식 카테고리\r\n    public static final int CATEGORY_PRODUCT = 102;     // 소모품 카테고리\r\n\r\n    private int mCategory = CATEGORY_SCHEDULE;          // 현재 선택된 카테고리\r\n    private Button mScheduleButton;                     // 카테고리 버튼\r\n    private Button mFoodButton;\r\n    private Button mProductButton;\r\n\r\n    private LocalDate mSelectedDate;                    // 현재 선택된 날짜\r\n    private CalendarView mCalendarView;                 // 달력 뷰\r\n    private TextView mSelectedMonthText;                // 현재 달 텍스트뷰\r\n    private GridLayout mCalendarGrid;\r\n\r\n    private RecyclerView mRecycler;                     // 리사이클러뷰\r\n    private ScheduleAdapter mScheduleAdapter;\r\n    private ProductAdapter mProductAdapter;\r\n    private List<Schedule> mScheduleList;\r\n    private List<Product> mProductList;\r\n    private TextView mNoItemsText;\r\n\r\n\r\n    @Override\r\n    public View onCreateView(LayoutInflater inflater, ViewGroup container,\r\n                             Bundle savedInstanceState) {\r\n        // Inflate the layout for this fragment\r\n        View view = inflater.inflate(R.layout.fragment_calendar, container, false);\r\n\r\n        mNoItemsText = view.findViewById(R.id.txtNoItems);\r\n\r\n        // 버튼에 리스너를 설정한다\r\n        mScheduleButton = view.findViewById(R.id.btnSchedule);\r\n        mFoodButton = view.findViewById(R.id.btnFood);\r\n        mProductButton = view.findViewById(R.id.btnProduct);\r\n        mScheduleButton.setOnClickListener(this);\r\n        mFoodButton.setOnClickListener(this);\r\n        mProductButton.setOnClickListener(this);\r\n\r\n        ImageButton addIButton = view.findViewById(R.id.ibtnAdd);\r\n        ImageButton prevMonthIButton = view.findViewById(R.id.ibtnPrevMonth);\r\n        ImageButton nextMonthIButton = view.findViewById(R.id.ibtnNextMonth);\r\n        addIButton.setOnClickListener(this);\r\n        prevMonthIButton.setOnClickListener(this);\r\n        nextMonthIButton.setOnClickListener(this);\r\n\r\n        // 카테고리 버튼 초기화\r\n        updateCategoryButtons();\r\n\r\n        // 날짜 UI 초기화\r\n        mCalendarView = view.findViewById(R.id.calendar);\r\n        mCalendarGrid = view.findViewById(R.id.calendar_grid);\r\n        mCalendarView.setOnDateChangeListener(this);\r\n        mSelectedDate = LocalDate.now();\r\n\r\n        mSelectedMonthText = view.findViewById(R.id.txtSelectedMonth);\r\n        updateSelectedMonthUI();\r\n        updateCalendarGrid();\r\n\r\n        // 리사이클러뷰 초기화\r\n        buildRecycler(view);\r\n        updateRecycler();\r\n\r\n        return view;\r\n    }\r\n\r\n    // 카테고리 버튼 (일정, 음식, 소모품) 을 업데이트한다\r\n\r\n    private void updateCategoryButtons() {\r\n\r\n        int gray = getResources().getColor(R.color.gray, null);\r\n        int green = getResources().getColor(R.color.green, null);\r\n\r\n        mScheduleButton.setBackgroundColor(Color.WHITE);\r\n        mScheduleButton.setTextColor(gray);\r\n        mFoodButton.setBackgroundColor(Color.WHITE);\r\n        mFoodButton.setTextColor(gray);\r\n        mProductButton.setBackgroundColor(Color.WHITE);\r\n        mProductButton.setTextColor(gray);\r\n\r\n        switch (mCategory) {\r\n            case CATEGORY_SCHEDULE:\r\n                mScheduleButton.setBackgroundColor(green);\r\n                mScheduleButton.setTextColor(Color.WHITE);\r\n                break;\r\n            case CATEGORY_FOOD:\r\n                mFoodButton.setBackgroundColor(green);\r\n                mFoodButton.setTextColor(Color.WHITE);\r\n                break;\r\n            case CATEGORY_PRODUCT:\r\n                mProductButton.setBackgroundColor(green);\r\n                mProductButton.setTextColor(Color.WHITE);\r\n                break;\r\n        }\r\n    }\r\n\r\n    // 리사이클러뷰를 초기화한다\r\n\r\n    private void buildRecycler(View view) {\r\n\r\n        mRecycler = view.findViewById(R.id.recycler);\r\n        mRecycler.setLayoutManager(new LinearLayoutManager(getContext()));\r\n\r\n        mScheduleList = new ArrayList<>();\r\n        mScheduleAdapter = new ScheduleAdapter(mScheduleList);\r\n        mScheduleAdapter.setOnItemClickListener(position -> {\r\n            Schedule schedule = mScheduleList.get(position);\r\n            new AlertDialog.Builder(getContext())\r\n                    .setTitle(\"일정 수정\")\r\n                    .setPositiveButton(\"수정하기\", (dialog, which) -> {\r\n                        startAddActivity(schedule.getId());\r\n                    })\r\n                    .setNegativeButton(\"삭제하기\", (dialog, which) -> {\r\n                        SQLiteHelper.getInstance(getContext())\r\n                                .deleteSchedule(schedule.getId());\r\n                        Toast.makeText(getContext(), \"삭제가 완료되었습니다.\", Toast.LENGTH_SHORT).show();\r\n                        updateRecycler();\r\n                        updateCalendarGrid();\r\n                    })\r\n                    .setNeutralButton(\"취소\", null)\r\n                    .show();\r\n        });\r\n\r\n        mProductList = new ArrayList<>();\r\n        mProductAdapter = new ProductAdapter(mProductList);\r\n        mProductAdapter.setOnItemClickListener(position -> {\r\n            Product product = mProductList.get(position);\r\n            new AlertDialog.Builder(getContext())\r\n                    .setTitle(\"제품 수정\")\r\n                    .setPositiveButton(\"수정하기\", (dialog, which) -> startAddActivity(product.getId()))\r\n                    .setNegativeButton(\"삭제하기\", (dialog, which) -> {\r\n                        SQLiteHelper.getInstance(getContext())\r\n                                .deleteProduct(product.getId());\r\n                        Toast.makeText(getContext(), \"삭제가 완료되었습니다.\", Toast.LENGTH_SHORT).show();\r\n                        updateRecycler();\r\n                        updateCalendarGrid();\r\n                    })\r\n                    .setNeutralButton(\"취소\", null)\r\n                    .show();\r\n        });\r\n    }\r\n\r\n    // 리사이클러뷰를 업데이트한다\r\n\r\n    private void updateRecycler() {\r\n\r\n        boolean isEmpty = true;\r\n\r\n        switch (mCategory) {\r\n            case CATEGORY_SCHEDULE:\r\n                // 리사이클러뷰에 일정 목록을 띄운다\r\n                mRecycler.setAdapter(mScheduleAdapter);\r\n                mScheduleList.clear();\r\n                mScheduleList.addAll(SQLiteHelper.getInstance(getContext())\r\n                        .getScheduleByDate(mSelectedDate));\r\n                isEmpty = mScheduleList.isEmpty();\r\n                break;\r\n            case CATEGORY_PRODUCT:\r\n                // 리사이클러뷰에 소모품 목록을 띄운다\r\n                mRecycler.setAdapter(mProductAdapter);\r\n                mProductList.clear();\r\n                mProductList.addAll(SQLiteHelper.getInstance(getContext())\r\n                        .getProductByDate(mSelectedDate));\r\n                isEmpty = mProductList.isEmpty();\r\n                break;\r\n        }\r\n\r\n        // 항목이 없으면 문구를 보여준다\r\n        mNoItemsText.setVisibility(isEmpty ? View.VISIBLE : View.INVISIBLE);\r\n        mRecycler.setVisibility(isEmpty ? View.INVISIBLE : View.VISIBLE);\r\n    }\r\n\r\n    // 현재 달 UI 를 업데이트한다\r\n    private void updateSelectedMonthUI() {\r\n\r\n        String strSelectedMonth = String.format(Locale.getDefault(),\r\n                \"%s %d\",\r\n                mSelectedDate.getMonth().toString(), mSelectedDate.getYear());\r\n\r\n        mSelectedMonthText.setText(strSelectedMonth);\r\n    }\r\n\r\n    // 달력 격자 업데이트 : 항목이 존재하는 달력 날짜 하이라이트\r\n\r\n    private void updateCalendarGrid() {\r\n\r\n        Drawable normal = ResourcesCompat.getDrawable(getResources(),\r\n                R.drawable.calendar_cell, null);\r\n        Drawable highlighted = ResourcesCompat.getDrawable(getResources(),\r\n                R.drawable.calendar_cell_highlighted, null);\r\n\r\n        // 모든 날짜 하이라이트 해제\r\n        for (int i = 0; i < 42; i++) {\r\n            View dayView = mCalendarGrid.getChildAt(7 + i);\r\n            dayView.setBackground(normal);\r\n        }\r\n\r\n        // 항목이 존재하는 날짜에만 하이라이트\r\n        LocalDate firstDate;\r\n        int firstPosition, maxDays;\r\n\r\n        switch (mCategory) {\r\n            case CATEGORY_SCHEDULE:\r\n                List<Schedule> scheduleList = SQLiteHelper.getInstance(getContext())\r\n                        .getScheduleByMonth(mSelectedDate);\r\n\r\n                firstDate = mSelectedDate.withDayOfMonth(1);\r\n                firstPosition = 7 + (firstDate.getDayOfWeek().getValue() % 7);\r\n                maxDays = mSelectedDate.getMonth().maxLength();\r\n\r\n                for (int i = 0; i < maxDays; i++) {\r\n                    LocalDate date = mSelectedDate.withDayOfMonth(i + 1);\r\n                    View dayView = mCalendarGrid.getChildAt(firstPosition + date.getDayOfMonth() - 1);\r\n\r\n                    for (Schedule schedule : scheduleList) {\r\n                        if (!date.isBefore(schedule.getStartDate())\r\n                                && !date.isAfter(schedule.getEndDate())) {\r\n                            dayView.setBackground(highlighted);\r\n                            break;\r\n                        }\r\n                    }\r\n                }\r\n                break;\r\n            case CATEGORY_PRODUCT:\r\n                List<Product> productList = SQLiteHelper.getInstance(getContext())\r\n                        .getProductByMonth(mSelectedDate);\r\n\r\n                firstDate = mSelectedDate.withDayOfMonth(1);\r\n                firstPosition = 7 + (firstDate.getDayOfWeek().getValue() % 7);\r\n                maxDays = mSelectedDate.getMonth().maxLength();\r\n\r\n                for (int i = 0; i < maxDays; i++) {\r\n                    LocalDate date = mSelectedDate.withDayOfMonth(i + 1);\r\n                    View dayView = mCalendarGrid.getChildAt(firstPosition + date.getDayOfMonth() - 1);\r\n\r\n                    for (Product product : productList) {\r\n                        if (!date.isBefore(product.getOpenDate())\r\n                                && !date.isAfter(product.getDueDate())) {\r\n                            dayView.setBackground(highlighted);\r\n                            break;\r\n                        }\r\n                    }\r\n                }\r\n                break;\r\n        }\r\n    }\r\n\r\n    // 버튼 클릭을 처리한다\r\n\r\n    @Override\r\n    public void onClick(View v) {\r\n\r\n        int id = v.getId();\r\n\r\n        if (id == R.id.btnSchedule) {\r\n            selectCategory(CATEGORY_SCHEDULE);\r\n        } else if (id == R.id.btnFood) {\r\n            selectCategory(CATEGORY_FOOD);\r\n        } else if (id == R.id.btnProduct) {\r\n            selectCategory(CATEGORY_PRODUCT);\r\n        } else if (id == R.id.ibtnAdd) {\r\n            startAddActivity(-1);\r\n        } else if (id == R.id.ibtnPrevMonth) {\r\n            moveToPrevMonth();\r\n        } else if (id == R.id.ibtnNextMonth) {\r\n            moveToNextMonth();\r\n        }\r\n    }\r\n\r\n    // 달력에서 특정 날짜를 선택했을 때\r\n\r\n    @Override\r\n    public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {\r\n\r\n        mSelectedDate = LocalDate.of(year, month + 1, dayOfMonth);\r\n\r\n        // 리사이클러뷰 업데이트\r\n        updateRecycler();\r\n\r\n        // 선택된 달 UI 업데이트\r\n        updateSelectedMonthUI();\r\n    }\r\n\r\n    @Override\r\n    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {\r\n        super.onActivityResult(requestCode, resultCode, data);\r\n\r\n        if (requestCode == REQUEST_ADD) {\r\n            // 추가 액티비티에서 추가가 실행된 경우 리사이클러뷰 업데이트\r\n            if (resultCode == Activity.RESULT_OK) {\r\n                updateRecycler();\r\n                updateCalendarGrid();\r\n            }\r\n        }\r\n    }\r\n\r\n    // 추가/수정하기 액티비티를 시작한다\r\n\r\n    private void startAddActivity(int id) {\r\n\r\n        Intent intent = null;\r\n\r\n        switch (mCategory) {\r\n            case CATEGORY_SCHEDULE:\r\n                intent = new Intent(getContext(), AddScheduleActivity.class);\r\n                if (id != -1) {\r\n                    intent.putExtra(AddScheduleActivity.EXTRA_SCHEDULE_ID, id);\r\n                }\r\n                intent.putExtra(AddScheduleActivity.EXTRA_SELECTED_DATE, mSelectedDate.toString());\r\n                break;\r\n            case CATEGORY_PRODUCT:\r\n                intent = new Intent(getContext(), AddProductActivity.class);\r\n                if (id != -1) {\r\n                    intent.putExtra(AddProductActivity.EXTRA_PRODUCT_ID, id);\r\n                }\r\n                intent.putExtra(AddProductActivity.EXTRA_SELECTED_DATE, mSelectedDate.toString());\r\n                break;\r\n        }\r\n\r\n        if (intent != null) {\r\n            startActivityForResult(intent, REQUEST_ADD);\r\n        }\r\n    }\r\n\r\n    // 카테고리 선택하기\r\n\r\n    private void selectCategory(int newCategory) {\r\n\r\n        mCategory = newCategory;\r\n        updateCategoryButtons();\r\n        updateRecycler();\r\n        updateCalendarGrid();\r\n    }\r\n\r\n    // 이전 달로 이동\r\n\r\n    private void moveToPrevMonth() {\r\n\r\n        mSelectedDate = mSelectedDate.minusMonths(1);\r\n        mCalendarView.setDate(mSelectedDate.toEpochDay() * 86400 * 1000);\r\n\r\n        // 리사이클러뷰 업데이트\r\n        updateRecycler();\r\n\r\n        // 선택된 달 UI 업데이트\r\n        updateSelectedMonthUI();\r\n\r\n        updateCalendarGrid();\r\n    }\r\n\r\n    // 다음 달로 이동\r\n\r\n    private void moveToNextMonth() {\r\n\r\n        mSelectedDate = mSelectedDate.plusMonths(1);\r\n        mCalendarView.setDate(mSelectedDate.toEpochDay() * 86400 * 1000);\r\n\r\n        // 리사이클러뷰 업데이트\r\n        updateRecycler();\r\n\r\n        // 선택된 달 UI 업데이트\r\n        updateSelectedMonthUI();\r\n\r\n        updateCalendarGrid();\r\n    }\r\n\r\n}\r\n\r\n\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/example/savingdays/CalendarActivity.java	(revision 9cf2e5dbd9cd5178c3f580f59f2023124ddfe800)
++++ app/src/main/java/com/example/savingdays/CalendarActivity.java	(date 1620314007441)
+@@ -250,7 +250,7 @@
+ 
+                 firstDate = mSelectedDate.withDayOfMonth(1);
+                 firstPosition = 7 + (firstDate.getDayOfWeek().getValue() % 7);
+-                maxDays = mSelectedDate.getMonth().maxLength();
++                maxDays = mSelectedDate.lengthOfMonth();
+ 
+                 for (int i = 0; i < maxDays; i++) {
+                     LocalDate date = mSelectedDate.withDayOfMonth(i + 1);
+@@ -271,7 +271,7 @@
+ 
+                 firstDate = mSelectedDate.withDayOfMonth(1);
+                 firstPosition = 7 + (firstDate.getDayOfWeek().getValue() % 7);
+-                maxDays = mSelectedDate.getMonth().maxLength();
++                maxDays = mSelectedDate.lengthOfMonth();
+ 
+                 for (int i = 0; i < maxDays; i++) {
+                     LocalDate date = mSelectedDate.withDayOfMonth(i + 1);
+Index: .idea/shelf/Uncommitted_changes_before_Checkout_at_2021-04-19__12_54__Default_Changelist_.xml
+===================================================================
+--- .idea/shelf/Uncommitted_changes_before_Checkout_at_2021-04-19__12_54__Default_Changelist_.xml	(revision 9cf2e5dbd9cd5178c3f580f59f2023124ddfe800)
++++ .idea/shelf/Uncommitted_changes_before_Checkout_at_2021-04-19__12_54__Default_Changelist_.xml	(revision 9cf2e5dbd9cd5178c3f580f59f2023124ddfe800)
+@@ -1,4 +0,0 @@
+-<changelist name="Uncommitted_changes_before_Checkout_at_2021-04-19_오전_12_54_[Default_Changelist]" date="1618761288221" recycled="false" toDelete="true">
+-  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2021-04-19_오전_12_54_[Default_Changelist]/shelved.patch" />
+-  <option name="DESCRIPTION" value="Uncommitted changes before Checkout at 2021-04-19 오전 12:54 [Default Changelist]" />
+-</changelist>
+\ No newline at end of file
+Index: .idea/shelf/Uncommitted_changes_before_Checkout_at_2021-04-19__12_57__Default_Changelist_.xml
+===================================================================
+--- .idea/shelf/Uncommitted_changes_before_Checkout_at_2021-04-19__12_57__Default_Changelist_.xml	(revision 9cf2e5dbd9cd5178c3f580f59f2023124ddfe800)
++++ .idea/shelf/Uncommitted_changes_before_Checkout_at_2021-04-19__12_57__Default_Changelist_.xml	(revision 9cf2e5dbd9cd5178c3f580f59f2023124ddfe800)
+@@ -1,4 +0,0 @@
+-<changelist name="Uncommitted_changes_before_Checkout_at_2021-04-19_오전_12_57_[Default_Changelist]" date="1618761451117" recycled="false" toDelete="true">
+-  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2021-04-19_오전_12_57_[Default_Changelist]/shelved.patch" />
+-  <option name="DESCRIPTION" value="Uncommitted changes before Checkout at 2021-04-19 오전 12:57 [Default Changelist]" />
+-</changelist>
+\ No newline at end of file
+Index: .idea/shelf/Uncommitted_changes_before_Checkout_at_2021-04-19__12_54__Default_Changelist_1.xml
+===================================================================
+--- .idea/shelf/Uncommitted_changes_before_Checkout_at_2021-04-19__12_54__Default_Changelist_1.xml	(revision 9cf2e5dbd9cd5178c3f580f59f2023124ddfe800)
++++ .idea/shelf/Uncommitted_changes_before_Checkout_at_2021-04-19__12_54__Default_Changelist_1.xml	(revision 9cf2e5dbd9cd5178c3f580f59f2023124ddfe800)
+@@ -1,4 +0,0 @@
+-<changelist name="Uncommitted_changes_before_Checkout_at_2021-04-19_오전_12_54_[Default_Changelist]1" date="1618761312659" recycled="true" deleted="true">
+-  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2021-04-19_오전_12_54_[Default_Changelist]1/shelved.patch" />
+-  <option name="DESCRIPTION" value="Uncommitted changes before Checkout at 2021-04-19 오전 12:54 [Default Changelist]" />
+-</changelist>
+\ No newline at end of file
+Index: .idea/shelf/Uncommitted_changes_before_Checkout_at_2021-04-19__12_57__Default_Changelist_1.xml
+===================================================================
+--- .idea/shelf/Uncommitted_changes_before_Checkout_at_2021-04-19__12_57__Default_Changelist_1.xml	(revision 9cf2e5dbd9cd5178c3f580f59f2023124ddfe800)
++++ .idea/shelf/Uncommitted_changes_before_Checkout_at_2021-04-19__12_57__Default_Changelist_1.xml	(revision 9cf2e5dbd9cd5178c3f580f59f2023124ddfe800)
+@@ -1,4 +0,0 @@
+-<changelist name="Uncommitted_changes_before_Checkout_at_2021-04-19_오전_12_57_[Default_Changelist]1" date="1618761474076" recycled="true" deleted="true">
+-  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2021-04-19_오전_12_57_[Default_Changelist]1/shelved.patch" />
+-  <option name="DESCRIPTION" value="Uncommitted changes before Checkout at 2021-04-19 오전 12:57 [Default Changelist]" />
+-</changelist>
+\ No newline at end of file
+Index: .idea/shelf/Uncommitted_changes_before_Checkout_at_2021-05-06__11_00__Default_Changelist_.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- .idea/shelf/Uncommitted_changes_before_Checkout_at_2021-05-06__11_00__Default_Changelist_.xml	(date 1620463567656)
++++ .idea/shelf/Uncommitted_changes_before_Checkout_at_2021-05-06__11_00__Default_Changelist_.xml	(date 1620463567656)
+@@ -0,0 +1,54 @@
++<changelist name="Uncommitted_changes_before_Checkout_at_2021-05-06_오후_11_00_[Default_Changelist]" date="1620309655684" recycled="true" deleted="true">
++  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2021-05-06_오후_11_00_[Default_Changelist]/shelved.patch" />
++  <option name="DESCRIPTION" value="Uncommitted changes before Checkout at 2021-05-06 오후 11:00 [Default Changelist]" />
++  <binary>
++    <option name="BEFORE_PATH" />
++    <option name="AFTER_PATH" value="app/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png" />
++    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2021-05-06_오후_11_00_[Default_Changelist]/ic_launcher.png" />
++  </binary>
++  <binary>
++    <option name="BEFORE_PATH" />
++    <option name="AFTER_PATH" value="app/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png" />
++    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2021-05-06_오후_11_00_[Default_Changelist]/ic_launcher_round.png" />
++  </binary>
++  <binary>
++    <option name="BEFORE_PATH" />
++    <option name="AFTER_PATH" value="app/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png" />
++    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2021-05-06_오후_11_00_[Default_Changelist]/ic_launcher_round1.png" />
++  </binary>
++  <binary>
++    <option name="BEFORE_PATH" />
++    <option name="AFTER_PATH" value="app/app/src/main/res/mipmap-hdpi/ic_launcher_round.png" />
++    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2021-05-06_오후_11_00_[Default_Changelist]/ic_launcher_round2.png" />
++  </binary>
++  <binary>
++    <option name="BEFORE_PATH" />
++    <option name="AFTER_PATH" value="app/app/src/main/res/mipmap-xhdpi/ic_launcher.png" />
++    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2021-05-06_오후_11_00_[Default_Changelist]/ic_launcher1.png" />
++  </binary>
++  <binary>
++    <option name="BEFORE_PATH" />
++    <option name="AFTER_PATH" value="app/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png" />
++    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2021-05-06_오후_11_00_[Default_Changelist]/ic_launcher_round3.png" />
++  </binary>
++  <binary>
++    <option name="BEFORE_PATH" />
++    <option name="AFTER_PATH" value="app/app/src/main/res/mipmap-mdpi/ic_launcher.png" />
++    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2021-05-06_오후_11_00_[Default_Changelist]/ic_launcher2.png" />
++  </binary>
++  <binary>
++    <option name="BEFORE_PATH" />
++    <option name="AFTER_PATH" value="app/app/src/main/res/mipmap-hdpi/ic_launcher.png" />
++    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2021-05-06_오후_11_00_[Default_Changelist]/ic_launcher3.png" />
++  </binary>
++  <binary>
++    <option name="BEFORE_PATH" />
++    <option name="AFTER_PATH" value="app/app/src/main/res/mipmap-xxhdpi/ic_launcher.png" />
++    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2021-05-06_오후_11_00_[Default_Changelist]/ic_launcher4.png" />
++  </binary>
++  <binary>
++    <option name="BEFORE_PATH" />
++    <option name="AFTER_PATH" value="app/app/src/main/res/mipmap-mdpi/ic_launcher_round.png" />
++    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2021-05-06_오후_11_00_[Default_Changelist]/ic_launcher_round4.png" />
++  </binary>
++</changelist>
+\ No newline at end of file

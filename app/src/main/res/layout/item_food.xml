@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="10dp">
+
+    <TextView
+        android:id="@+id/txtFoodTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="피자"
+        android:textStyle="bold"
+        tools:ignore="HardcodedText" />
+
+    <TextView
+        android:id="@+id/txtDivider"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_toEndOf="@id/txtFoodTitle"
+        android:text="|"
+        tools:ignore="HardcodedText" />
+
+
+
+    <TextView
+        android:id="@+id/txtFoodOpenDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toStartOf="@id/txtWave"
+        android:text="2021년 5월 1일"
+        android:textSize="13sp"
+        tools:ignore="HardcodedText" />
+
+    <TextView
+        android:id="@+id/txtWave"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="4dp"
+        android:layout_toStartOf="@id/txtFoodDueDate"
+        android:text="~"
+        android:textSize="13sp"
+        tools:ignore="HardcodedText" />
+
+    <TextView
+        android:id="@+id/txtFoodDueDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:text="2021년 5월 1일"
+        android:textSize="13sp"
+        tools:ignore="HardcodedText" />
+
+</RelativeLayout>
