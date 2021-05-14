@@ -1,5 +1,31 @@
 <resources>
     <string name="app_name">Savingdays</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="saving_days">SAVING DAYS</string>
+    <string name="schedule">일정</string>
+    <string name="food">음식</string>
+    <string name="product">소모품</string>
+    <string name="title_activity_add_schedule">AddScheduleActivity</string>
+    <!--
+    This string is used for square devices and overridden by hello_world in
+    values-round/strings.xml for round devices.
+    -->
+    <string name="hello_world">Hello Square World!</string>
+    <string name="title_activity_add_product">AddProductActivity</string>
+    <string name="cancel">취소</string>
+    <string name="confirm">확인</string>
+    <string name="schedule_title">일정 제목</string>
+    <string name="start_date">시작 날짜</string>
+    <string name="end_date">종료 날짜</string>
+    <string name="notification">알림</string>
+    <string name="please_add_new_item">새로운 항목을 추가해주세요</string>
+    <string name="product_title">제목</string>
+    <string name="open_date">개봉시기</string>
+    <string name="due_date">소비기한</string>
+    <string name="food_title">음식 제목</string>
+    <string name="title_activity_add_food">AddFoodActivity</string>
+
     <string name="저장">저장</string>
     <string name="할일입력">할일입력</string>
     <string name="체크리스트">체크리스트</string>

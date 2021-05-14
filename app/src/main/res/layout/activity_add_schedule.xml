@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="10dp"
+    tools:context=".AddScheduleActivity">
+
+    <!-- 버튼 레이아웃 -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp">
+
+        <!-- 취소 버튼 -->
+        <ImageButton
+            android:id="@+id/ibtnCancel"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_alignParentStart="true"
+            android:background="@drawable/ic_close"
+            android:backgroundTint="@color/gray"
+            android:contentDescription="@string/cancel" />
+
+        <!-- 확인 버튼 -->
+        <ImageButton
+            android:id="@+id/ibtnConfirm"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_alignParentEnd="true"
+            android:background="@drawable/ic_check"
+            android:backgroundTint="@color/green"
+            android:contentDescription="@string/confirm" />
+
+    </RelativeLayout>
+
+    <!-- EditText: 일정 제목 -->
+    <EditText
+        android:id="@+id/editScheduleTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:autofillHints=""
+        android:hint="@string/schedule_title"
+        android:inputType="text"
+        android:textSize="18sp" />
+
+    <!-- 날짜/알림 레이아웃 -->
+    <GridLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:columnCount="2">
+
+        <TextView
+            android:layout_width="140dp"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:text="@string/start_date"
+            android:textColor="@color/gray"
+            android:textSize="18sp" />
+
+
+        <Button
+            android:id="@+id/btnStartDate"
+            android:layout_width="160dp"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/white"
+            android:text="2021년 3월 26일"
+            android:textColor="@color/gray"
+            tools:ignore="HardcodedText" />
+
+        <TextView
+            android:layout_width="140dp"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:text="@string/end_date"
+            android:textColor="@color/gray"
+            android:textSize="18sp" />
+
+        <Button
+            android:id="@+id/btnEndDate"
+            android:layout_width="160dp"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/white"
+            android:text="2021년 3월 26일"
+            android:textColor="@color/gray"
+            tools:ignore="HardcodedText" />
+
+        <TextView
+            android:layout_width="140dp"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:text="@string/notification"
+            android:textColor="@color/gray"
+            android:textSize="18sp" />
+
+        <Button
+            android:id="@+id/btnNotification"
+            android:layout_width="160dp"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/white"
+            android:text="알림 없음"
+            android:textColor="@color/gray"
+            tools:ignore="HardcodedText" />
+
+    </GridLayout>
+
+</LinearLayout>

@@ -9,4 +9,6 @@
     <color name="white">#FFFFFFFF</color>
     <color name="savingdays">#8CDB99</color>
     <color name="colorPrimaryDark">@android:color/holo_green_dark</color>
+    <color name="green">#7C7</color>
+    <color name="gray">#333</color>
 </resources>
