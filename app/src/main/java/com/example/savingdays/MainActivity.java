@@ -81,7 +81,8 @@ public class MainActivity extends AppCompatActivity {
                         myStartActivity(CommunityActivity.class);
                         break;
                     case R.id.action_check:
-                        setFrag(2);
+                        Intent intent = new Intent(getApplicationContext(), ToDoActivity.class);
+                        startActivity(intent);
                         break;
                     case R.id.action_store:
                         setFrag(3);
