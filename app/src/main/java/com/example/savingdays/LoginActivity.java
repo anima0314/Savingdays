@@ -54,11 +54,11 @@ public class LoginActivity extends AppCompatActivity {
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
                                 FirebaseUser user = mAuth.getCurrentUser();
-                                startToast("로그인에 성공했습니다..");
+                                startToast("로그인에 성공했습니다.");
                                 myStartActivity(MainActivity.class);
                             } else {
                                 if(task.getException()!=null) {
-                                    startToast(task.getException().toString());
+                                    startToast("가입하지않은 이메일이거나, 잘못된 비밀번호입니다.");
                                 }
                             }
                         }
