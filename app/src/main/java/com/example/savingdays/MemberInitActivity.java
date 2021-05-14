@@ -1,5 +1,6 @@
 package com.example.savingdays;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -25,6 +26,7 @@ public class MemberInitActivity extends AppCompatActivity {
         setContentView(R.layout.activity_member_init);
 
         findViewById(R.id.checkButton).setOnClickListener(onClickListener);
+        findViewById(R.id.logoutButton).setOnClickListener(onClickListener);
     }
 
     @Override
@@ -32,11 +34,14 @@ public class MemberInitActivity extends AppCompatActivity {
         super.onBackPressed();
         finish();
     }
-
     View.OnClickListener onClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            switch (v.getId()) {
+            switch (v.getId()){
+                case R.id.logoutButton:
+                    FirebaseAuth.getInstance().signOut();
+                    myStartActivity(MainActivity.class);
+                    break;
                 case R.id.checkButton:
                     profileUpdate();
                     break;
@@ -80,5 +85,10 @@ public class MemberInitActivity extends AppCompatActivity {
 
     private void startToast(String msg){
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+    }
+
+    private void myStartActivity(Class c) {
+        Intent intent = new Intent(this, c);
+        startActivity(intent);
     }
 }

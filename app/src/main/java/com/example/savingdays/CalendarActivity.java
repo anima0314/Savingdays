@@ -89,9 +89,11 @@ public class CalendarActivity extends Fragment implements
         mProductButton.setOnClickListener(this);
 
         ImageButton addIButton = view.findViewById(R.id.ibtnAdd);
+        ImageButton memberinitButton = view.findViewById(R.id.memberinit);
         ImageButton prevMonthIButton = view.findViewById(R.id.ibtnPrevMonth);
         ImageButton nextMonthIButton = view.findViewById(R.id.ibtnNextMonth);
         addIButton.setOnClickListener(this);
+        memberinitButton.setOnClickListener(this);
         prevMonthIButton.setOnClickListener(this);
         nextMonthIButton.setOnClickListener(this);
 
@@ -362,6 +364,8 @@ public class CalendarActivity extends Fragment implements
             moveToPrevMonth();
         } else if (id == R.id.ibtnNextMonth) {
             moveToNextMonth();
+        } else if (id == R.id.memberinit) {
+            myStartActivity(MemberInitActivity.class);
         }
     }
 
@@ -461,6 +465,11 @@ public class CalendarActivity extends Fragment implements
         // 선택된 달 UI 업데이트
         updateSelectedMonthUI();
         updateCalendarGrid();
+    }
+
+    private void myStartActivity(Class c) {
+        Intent intent = new Intent(getActivity(), c);
+        startActivity(intent);
     }
 
 }
