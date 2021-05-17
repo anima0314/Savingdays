@@ -9,7 +9,6 @@
     <string name="title_activity_add_schedule">AddScheduleActivity</string>
     <!--
     This string is used for square devices and overridden by hello_world in
-    values-round/strings.xml for round devices.
     -->
     <string name="hello_world">Hello Square World!</string>
     <string name="title_activity_add_product">AddProductActivity</string>
@@ -32,8 +31,13 @@
     <string name="password_reset">비밀번호 재설정</string>
     <string name="login">로그인</string>
     <string name="password">비밀번호</string>
-    <string name="email">이메일</string>
+    <string name="email">이메일 1234@1234.com</string>
     <string name="send">보내기</string>
     <string name="logout">로그아웃</string>
     <string name="check">확인</string>
+    <string name="phonenumber">전화번호 010_0000_0000</string>
+    <string name="name">이름</string>
+    <string name="birth">생일 0000/00/00</string>
+    <string name="nickname">닉네임</string>
+
 </resources>

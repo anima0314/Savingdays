@@ -25,7 +25,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:hint="이름"
+            android:hint="@string/name"
             android:inputType="textPersonName" />
 
         <EditText
@@ -33,7 +33,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:hint="전화번호"
+            android:hint="@string/phonenumber"
             android:inputType="phone" />
 
         <EditText
@@ -41,7 +41,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:hint="생일"
+            android:hint="@string/birth"
             android:inputType="date" />
 
         <EditText
@@ -49,21 +49,21 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:hint="닉네임"
+            android:hint="@string/nickname"
             android:inputType="textPersonName" />
 
         <Button
             android:id="@+id/checkButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/check" />
+            android:text="@string/저장" />
 
         <Button
             android:id="@+id/logoutButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="50dp"
-            android:text="로그아웃" />
+            android:text="@string/logout" />
 
     </LinearLayout>
 

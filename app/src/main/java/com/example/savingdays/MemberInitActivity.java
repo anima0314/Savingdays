@@ -40,6 +40,7 @@ public class MemberInitActivity extends AppCompatActivity {
             switch (v.getId()){
                 case R.id.logoutButton:
                     FirebaseAuth.getInstance().signOut();
+                    startToast("로그아웃 되었습니다.");
                     myStartActivity(MainActivity.class);
                     break;
                 case R.id.checkButton:
@@ -55,7 +56,7 @@ public class MemberInitActivity extends AppCompatActivity {
         final String birthDay = ((EditText)findViewById(R.id.birthDayEditText)).getText().toString();
         final String nickName = ((EditText)findViewById(R.id.nickNameEditText)).getText().toString();
 
-        if (name.length() > 0 && phoneNumber.length() > 9 && birthDay.length() > 5 && nickName.length() > 0) {
+        if (name.length() > 0 && phoneNumber.length() > 10 && birthDay.length() > 7 && nickName.length() > 0) {
             user = FirebaseAuth.getInstance().getCurrentUser();
 
             MemberInfo memberinfo = new MemberInfo(name, phoneNumber, birthDay, nickName);

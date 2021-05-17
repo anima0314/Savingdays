@@ -1,5 +1,6 @@
 package com.example.savingdays;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
@@ -49,6 +50,7 @@ public class PasswordResetActivity extends AppCompatActivity {
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()) {
                                 startToast("이메일을 보냈습니다.");
+                                myStartActivity(LoginActivity.class);
                             }
                         }
                     });
@@ -59,5 +61,10 @@ public class PasswordResetActivity extends AppCompatActivity {
 
     private void startToast(String msg){
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+    }
+
+    private void myStartActivity(Class c) {
+        Intent intent = new Intent(this, c);
+        startActivity(intent);
     }
 }
