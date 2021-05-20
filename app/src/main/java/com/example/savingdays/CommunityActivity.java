@@ -11,11 +11,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.savingdays.Adapters.PostAdapter;
-import com.example.savingdays.Utils.DatabaseHandler;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.type.Date;
@@ -24,7 +24,6 @@ import java.util.ArrayList;
 
 public class CommunityActivity extends AppCompatActivity {
     private static String TAG = "CommunityActivity";
-    private DatabaseHandler db;
     private Object FirebaseUser;
 
     @Override
@@ -34,8 +33,7 @@ public class CommunityActivity extends AppCompatActivity {
 
         FirebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
-
-
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("posts")
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -47,9 +45,9 @@ public class CommunityActivity extends AppCompatActivity {
                                 Log.d(TAG, document.getId() + " => " + document.getData());
                                 postList.add(new PostInfo(
                                         document.getData().get("title").toString(),
-                                        (ArrayList<String>) document.getData().get("contents"),
-                                        document.getData().get("publisher").toString(),
-                                        new Date(document.getDate("createdAt").getTime())));
+                                        document.getData().get("contents").toString(),
+                                        document.getData().get("publisher").toString()));
+                                        //new Date(document.getDate("createdAt").getTime()
                             }
                             RecyclerView recyclerView = findViewById(R.id.recyclerView);
                             recyclerView.setHasFixedSize(true);
