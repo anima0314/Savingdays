@@ -1,9 +1,20 @@
 package com.example.savingdays;
 
+import com.google.type.Date;
+
 public class PostInfo {
     private String title;
     private String contents;
     private String publisher;
+    private Date createdAt;
+    private String id;
+
+    public PostInfo(String title, String Contents, String publisher, String id) {
+        this.title = title;
+        this.contents = Contents;
+        this.publisher = publisher;
+        this.id = id;
+    }
 
     public PostInfo(String title, String Contents, String publisher) {
         this.title = title;
@@ -38,6 +49,9 @@ public class PostInfo {
         this.publisher = publisher;
     }
 
+    //아이디
+    public String getId() {return this.id; }
+    public void setId(String id) {this.id = id; }
 
 
 

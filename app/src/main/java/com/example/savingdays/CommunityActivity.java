@@ -48,7 +48,8 @@ public class CommunityActivity extends AppCompatActivity {
                                 postList.add(new PostInfo(
                                         document.getData().get("title").toString(),
                                         document.getData().get("contents").toString(),
-                                        document.getData().get("publisher").toString()));
+                                        document.getData().get("publisher").toString(),
+                                        document.getId()));
                                 //new Date(document.getDate("createdAt").getTime()
                             }
                             RecyclerView recyclerView = findViewById(R.id.recyclerView);
