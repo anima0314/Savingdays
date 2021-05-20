@@ -75,11 +75,10 @@ public class MainActivity extends AppCompatActivity {
                         myStartActivity(CommunityActivity.class);
                         break;
                     case R.id.action_check:
-                        Intent intent = new Intent(getApplicationContext(), ToDoActivity.class);
-                        startActivity(intent);
+                        myStartActivity(ToDoActivity.class);
                         break;
                     case R.id.action_store:
-
+                        myStartActivity(StoreActivity.class);
                         break;
                 }
                 return true;
