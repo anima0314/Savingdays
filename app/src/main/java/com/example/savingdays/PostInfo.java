@@ -37,4 +37,8 @@ public class PostInfo {
     public void setpublisher(String publisher) {
         this.publisher = publisher;
     }
+
+
+
+
 }

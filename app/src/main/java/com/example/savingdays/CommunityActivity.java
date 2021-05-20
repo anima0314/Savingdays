@@ -16,6 +16,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.type.Date;
@@ -24,14 +25,15 @@ import java.util.ArrayList;
 
 public class CommunityActivity extends AppCompatActivity {
     private static String TAG = "CommunityActivity";
-    private Object FirebaseUser;
+    private FirebaseUser firebaseUser;
+    private FirebaseFirestore firebaseFirestore;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_community);
 
-        FirebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("posts")
@@ -47,7 +49,7 @@ public class CommunityActivity extends AppCompatActivity {
                                         document.getData().get("title").toString(),
                                         document.getData().get("contents").toString(),
                                         document.getData().get("publisher").toString()));
-                                        //new Date(document.getDate("createdAt").getTime()
+                                //new Date(document.getDate("createdAt").getTime()
                             }
                             RecyclerView recyclerView = findViewById(R.id.recyclerView);
                             recyclerView.setHasFixedSize(true);
@@ -62,9 +64,9 @@ public class CommunityActivity extends AppCompatActivity {
                 });
 
 
-
         findViewById(R.id.writeButton).setOnClickListener(onClickListener);
     }
+
 
 
     View.OnClickListener onClickListener = new View.OnClickListener() {
@@ -83,3 +85,4 @@ public class CommunityActivity extends AppCompatActivity {
         startActivity(intent);
     }
 }
+
