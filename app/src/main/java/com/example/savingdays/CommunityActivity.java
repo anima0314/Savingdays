@@ -2,20 +2,72 @@ package com.example.savingdays;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.savingdays.Adapters.PostAdapter;
+import com.example.savingdays.Utils.DatabaseHandler;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.google.type.Date;
+
+import java.util.ArrayList;
 
 public class CommunityActivity extends AppCompatActivity {
+    private static String TAG = "CommunityActivity";
+    private DatabaseHandler db;
+    private Object FirebaseUser;
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_community);
 
+        FirebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+
+
+
+        db.collection("posts")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            ArrayList<PostInfo> postList = new ArrayList<>();
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                Log.d(TAG, document.getId() + " => " + document.getData());
+                                postList.add(new PostInfo(
+                                        document.getData().get("title").toString(),
+                                        (ArrayList<String>) document.getData().get("contents"),
+                                        document.getData().get("publisher").toString(),
+                                        new Date(document.getDate("createdAt").getTime())));
+                            }
+                            RecyclerView recyclerView = findViewById(R.id.recyclerView);
+                            recyclerView.setHasFixedSize(true);
+                            recyclerView.setLayoutManager(new LinearLayoutManager(CommunityActivity.this));
+
+                            RecyclerView.Adapter mAdapter = new PostAdapter(CommunityActivity.this, postList);
+                            recyclerView.setAdapter(mAdapter);
+                        } else {
+                            Log.d(TAG, "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
+
+
 
         findViewById(R.id.writeButton).setOnClickListener(onClickListener);
     }
+
 
     View.OnClickListener onClickListener = new View.OnClickListener() {
         @Override

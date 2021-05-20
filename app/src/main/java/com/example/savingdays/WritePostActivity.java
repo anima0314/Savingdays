@@ -48,16 +48,16 @@ public class WritePostActivity extends AppCompatActivity {
         if (title.length() > 0 && contents.length() > 0) {
             user = FirebaseAuth.getInstance().getCurrentUser();
 
-            WriteInfo writeInfo = new WriteInfo(title, contents, user.getUid());
-            uploader(writeInfo);
+            PostInfo postInfo = new PostInfo(title, contents, user.getUid());
+            uploader(postInfo);
 
         }else{
             startToast("게시글을 입력해 주세요.");
         }
     }
-    private void uploader(WriteInfo writeInfo){
+    private void uploader(PostInfo postInfo){
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("posts").add(writeInfo)
+        db.collection("posts").add(postInfo)
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {

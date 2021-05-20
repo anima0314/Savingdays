@@ -1,11 +1,11 @@
 package com.example.savingdays;
 
-public class WriteInfo {
+public class PostInfo {
     private String title;
     private String contents;
     private String publisher;
 
-    public WriteInfo(String title, String Contents, String publisher) {
+    public PostInfo(String title, String Contents, String publisher) {
         this.title = title;
         this.contents = Contents;
         this.publisher = publisher;

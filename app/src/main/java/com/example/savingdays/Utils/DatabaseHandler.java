@@ -94,4 +94,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public void deleteTask(int id){
         db.delete(TODO_TABLE, ID + "= ?", new String[] {String.valueOf(id)});
     }
+
+    public List<Object> collection(String posts) {
+        return null;
+    }
 }
