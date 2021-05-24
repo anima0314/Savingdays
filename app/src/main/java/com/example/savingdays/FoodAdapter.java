@@ -32,7 +32,7 @@ public class FoodAdapter extends RecyclerView.Adapter<FoodAdapter.ViewHolder> {
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
         private final TextView txtTitle;
-
+        private final TextView txtType;
         private final TextView txtOpenDate;
         private final TextView txtDueDate;
 
@@ -40,7 +40,7 @@ public class FoodAdapter extends RecyclerView.Adapter<FoodAdapter.ViewHolder> {
             super(itemView);
 
             txtTitle = itemView.findViewById(R.id.txtFoodTitle);
-
+            txtType=itemView.findViewById(R.id.txtFoodType);
             txtOpenDate = itemView.findViewById(R.id.txtFoodOpenDate);
             txtDueDate = itemView.findViewById(R.id.txtFoodDueDate);
         }
@@ -60,7 +60,7 @@ public class FoodAdapter extends RecyclerView.Adapter<FoodAdapter.ViewHolder> {
                     model.getDueDate().getDayOfMonth());
 
             txtTitle.setText(model.getTitle());
-
+            txtType.setText(Food.getTypeName(model.getType()));
             txtOpenDate.setText(strOpenDate);
             txtDueDate.setText(strDueDate);
 

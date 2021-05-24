@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -34,7 +35,7 @@ public class AddFoodActivity extends AppCompatActivity implements View.OnClickLi
     private Button mOpenDateButton;         // 날짜 버튼
     private Button mDueDateButton;
     private EditText mFoodTitleEdit;     // 제품 제목 에딧텍스트
-
+    private Spinner mFoodTypeSpinner;
 
     private LocalDate mOpenDate;            // 개봉 날짜
     private LocalDate mDueDate;             // 소비기한 날짜
@@ -78,8 +79,61 @@ public class AddFoodActivity extends AppCompatActivity implements View.OnClickLi
         }
         updateDateButtons();
 
+        // 제품군 스피너 초기화
+        mFoodTypeSpinner = findViewById(R.id.spinnerFoodType);
+        List<String> typeNameList = new ArrayList<>();
+        int[] types = Food.getTypes();
+        for (int type : types) {
+            String typeName = Food.getTypeName(type);
+            typeNameList.add(typeName);
+        }
+        mFoodTypeSpinner.setAdapter(new ArrayAdapter<>(
+                this, android.R.layout.simple_spinner_item,
+                typeNameList
+        ));
+        if (food != null) {
+            int sel = Spinner.INVALID_POSITION;
+            for (int i = 0; i < types.length; i++) {
+                if (types[i] == food.getType()) {
+                    sel = i;
+                    break;
+                }
+            }
+            mFoodTypeSpinner.setSelection(sel);
+        }
+        // 스피너값에 따른 날짜
+        mFoodTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                if(i==0){
+                    mDueDate=mOpenDate.plusMonths(1);
+                    String strDueDate = String.format(Locale.getDefault(),
+                            "%d년 %d월 %d일",
+                            mDueDate.getYear(), mDueDate.getMonthValue(), mDueDate.getDayOfMonth() );
+
+                    mDueDateButton.setText(strDueDate);
+                }
+                if(i==1){
+                    mDueDate=mOpenDate.plusMonths(2);
+                    String strDueDate = String.format(Locale.getDefault(),
+                            "%d년 %d월 %d일",
+                            mDueDate.getYear(), mDueDate.getMonthValue(), mDueDate.getDayOfMonth() );
+
+                    mDueDateButton.setText(strDueDate);
+
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
 
     }
+
+
+
 
     // 개봉, 소비기한 날짜 버튼 업데이트
 
@@ -117,10 +171,8 @@ public class AddFoodActivity extends AppCompatActivity implements View.OnClickLi
         } else if (id == R.id.btnOpenDate) {
             // 개봉 날짜 버튼 : 날짜 선택 대화상자 띄우기
             showDateDialog(true);
-        } else if (id == R.id.btnDueDate) {
-            // 소비기한 날짜 버튼 : 날짜 선택 대화상자 띄우기
-            showDateDialog(false);
         }
+
     }
 
     // DB 에 음식을 추가한다
@@ -134,14 +186,25 @@ public class AddFoodActivity extends AppCompatActivity implements View.OnClickLi
             Toast.makeText(this, "제목을 입력해주세요", Toast.LENGTH_SHORT).show();
             return false;
         }
-
+        int typePosition = mFoodTypeSpinner.getSelectedItemPosition();
+        if (typePosition == Spinner.INVALID_POSITION) {
+            Toast.makeText(this, "제품군을 선택해주세요.", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        int type = Food.getTypes()[typePosition];
+        if (type==1){
+            mDueDate=mOpenDate.plusMonths(1);
+        }
+        if (type==2){
+            mDueDate=mOpenDate.plusMonths(2);
+        }
         // DB 에 추가 및 업데이트
         Food food;
         if (mFoodId == -1) {
-            food = new Food(foodTitle, mOpenDate, mDueDate);
+            food = new Food( foodTitle ,type,mOpenDate,mDueDate);
             SQLiteHelper.getInstance(this).addFood(food);
         } else {
-            food = new Food(mFoodId, foodTitle,  mOpenDate, mDueDate);
+            food = new Food(mFoodId, foodTitle,type,  mOpenDate, mDueDate);
             SQLiteHelper.getInstance(this).updateFood(food);
         }
 

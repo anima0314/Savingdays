@@ -84,6 +84,7 @@ public class CalendarActivity extends Fragment implements
         mScheduleButton = view.findViewById(R.id.btnSchedule);
         mFoodButton = view.findViewById(R.id.btnFood);
         mProductButton = view.findViewById(R.id.btnProduct);
+
         mScheduleButton.setOnClickListener(this);
         mFoodButton.setOnClickListener(this);
         mProductButton.setOnClickListener(this);

@@ -23,7 +23,13 @@
         android:text="|"
         tools:ignore="HardcodedText" />
 
-
+    <TextView
+        android:id="@+id/txtFoodType"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/txtDivider"
+        android:text="우유"
+        tools:ignore="HardcodedText" />
 
     <TextView
         android:id="@+id/txtFoodOpenDate"

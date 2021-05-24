@@ -47,7 +47,12 @@
         android:inputType="text"
         android:textSize="18sp" />
 
-
+    <!-- 제품군 스피너 -->
+    <Spinner
+        android:id="@+id/spinnerFoodType"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="50dp" />
 
     <!-- 기한/알림 레이아웃 -->
     <GridLayout
@@ -59,7 +64,7 @@
             android:layout_width="140dp"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
-            android:text="@string/open_date"
+            android:text="@string/open_date2"
             android:textColor="@color/gray"
             android:textSize="18sp" />
 
