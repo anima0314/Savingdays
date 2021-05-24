@@ -21,6 +21,7 @@
     <string name="please_add_new_item">새로운 항목을 추가해주세요</string>
     <string name="product_title">제목</string>
     <string name="open_date">개봉시기</string>
+    <string name="open_date2">유통기한</string>
     <string name="due_date">소비기한</string>
     <string name="food_title">음식 제목</string>
     <string name="title_activity_add_food">AddFoodActivity</string>

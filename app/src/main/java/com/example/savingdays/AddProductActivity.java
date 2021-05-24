@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -26,7 +27,7 @@ public class AddProductActivity extends AppCompatActivity implements View.OnClic
 
     public static final String EXTRA_PRODUCT_ID = "com.exmaple.savingdays.product_id";
     public static final String EXTRA_SELECTED_DATE = "com.example.savingdays.selected_date";
-    public static final String EXTRA_FOOD_ID ="com.exmaple.savingdays.food_id" ;
+
 
     private int mProductId;                 // 제품 ID (-1 이면 추가모드, 아니면 수정모드)
 
@@ -99,6 +100,39 @@ public class AddProductActivity extends AppCompatActivity implements View.OnClic
             }
             mProductTypeSpinner.setSelection(sel);
         }
+
+
+     // 스피너값에 따른 날짜
+       mProductTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+           @Override
+           public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+
+
+           if(i==0){
+               mDueDate=mOpenDate.plusMonths(1);
+               String strDueDate = String.format(Locale.getDefault(),
+                       "%d년 %d월 %d일",
+                       mDueDate.getYear(), mDueDate.getMonthValue(), mDueDate.getDayOfMonth() );
+
+               mDueDateButton.setText(strDueDate);
+           }
+           if(i==1){
+               mDueDate=mOpenDate.plusMonths(2);
+               String strDueDate = String.format(Locale.getDefault(),
+                       "%d년 %d월 %d일",
+                       mDueDate.getYear(), mDueDate.getMonthValue(), mDueDate.getDayOfMonth() );
+
+               mDueDateButton.setText(strDueDate);
+
+           }
+
+           }
+
+           @Override
+           public void onNothingSelected(AdapterView<?> adapterView) {
+
+           }
+       });
     }
 
     // 개봉, 소비기한 날짜 버튼 업데이트
@@ -109,12 +143,14 @@ public class AddProductActivity extends AppCompatActivity implements View.OnClic
                 "%d년 %d월 %d일",
                 mOpenDate.getYear(), mOpenDate.getMonthValue(), mOpenDate.getDayOfMonth());
 
+        mOpenDateButton.setText(strOpenDate);
         String strDueDate = String.format(Locale.getDefault(),
                 "%d년 %d월 %d일",
                 mDueDate.getYear(), mDueDate.getMonthValue(), mDueDate.getDayOfMonth());
 
-        mOpenDateButton.setText(strOpenDate);
         mDueDateButton.setText(strDueDate);
+
+
     }
 
     // 버튼 클릭을 처리한다
@@ -137,9 +173,6 @@ public class AddProductActivity extends AppCompatActivity implements View.OnClic
         } else if (id == R.id.btnOpenDate) {
             // 개봉 날짜 버튼 : 날짜 선택 대화상자 띄우기
             showDateDialog(true);
-        } else if (id == R.id.btnDueDate) {
-            // 소비기한 날짜 버튼 : 날짜 선택 대화상자 띄우기
-            showDateDialog(false);
         }
     }
 
@@ -162,7 +195,12 @@ public class AddProductActivity extends AppCompatActivity implements View.OnClic
             return false;
         }
         int type = Product.getTypes()[typePosition];
-
+        if (type==1){
+            mDueDate=mOpenDate.plusMonths(1);
+        }
+        if (type==2){
+            mDueDate=mOpenDate.plusMonths(2);
+        }
         // DB 에 추가 및 업데이트
         Product product;
         if (mProductId == -1) {
@@ -189,7 +227,7 @@ public class AddProductActivity extends AppCompatActivity implements View.OnClic
                 this,
                 (view, year, month, dayOfMonth) -> {
                     // 날짜 선택 시 개봉/소비기한 날짜를 변경한다
-                    LocalDate date = LocalDate.of(year, month + 1, dayOfMonth);
+                    LocalDate date = LocalDate.of(year, month+1, dayOfMonth);
 
                     if (openOrDue) {
                         if (!date.isAfter(mDueDate)) {

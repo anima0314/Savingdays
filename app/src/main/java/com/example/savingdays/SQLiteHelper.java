@@ -33,6 +33,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     public static final String TABLE_FOODS = "food";
     public static final String COLUMN_FOOD_ID = "id";
     public static final String COLUMN_FOOD_TITLE = "title";
+    public static final String COLUMN_FOOD_TYPE = "type";
     public static final String COLUMN_FOOD_OPEN_DATE = "openDate";
     public static final String COLUMN_FOOD_DUE_DATE = "dueDate";
     // 제품 테이블의 정보
@@ -77,6 +78,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
                 "(" +
                 COLUMN_FOOD_ID + " INTEGER PRIMARY KEY, " +
                 COLUMN_FOOD_TITLE + " TEXT NOT NULL, " +
+                COLUMN_PRODUCT_TYPE + " INTEGER NOT NULL, " +
                 COLUMN_FOOD_OPEN_DATE + " TEXT NOT NULL, " +
                 COLUMN_FOOD_DUE_DATE + " TEXT NOT NULL" +
                 ")";
@@ -511,6 +513,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
             // 정보를 모두 values 객체에 입력한다
             ContentValues values = new ContentValues();
             values.put(COLUMN_FOOD_TITLE, food.getTitle());
+            values.put(COLUMN_FOOD_TYPE,food.getType());
             values.put(COLUMN_FOOD_OPEN_DATE, food.getOpenDate().toString());
             values.put(COLUMN_FOOD_DUE_DATE, food.getDueDate().toString());
 
@@ -544,13 +547,13 @@ public class SQLiteHelper extends SQLiteOpenHelper {
 
                 // 커서를 움직이면서 테이블의 정보들을 가져온다.
                 String title = cursor.getString(cursor.getColumnIndex(COLUMN_FOOD_TITLE));
-
+                int type= cursor.getInt(cursor.getColumnIndex(COLUMN_FOOD_TYPE));
                 String strOpenDate = cursor.getString(cursor.getColumnIndex(COLUMN_FOOD_OPEN_DATE));
                 String strDueDate = cursor.getString(cursor.getColumnIndex(COLUMN_FOOD_DUE_DATE));
 
                 // 정보로 객체를 만들어 리스트에 추가한다.
                 food = new Food(
-                        id, title, LocalDate.parse(strOpenDate), LocalDate.parse(strDueDate));
+                        id, title,type, LocalDate.parse(strOpenDate), LocalDate.parse(strDueDate));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -582,13 +585,13 @@ public class SQLiteHelper extends SQLiteOpenHelper {
                     // 커서를 움직이면서 테이블의 정보들을 가져온다.
                     int id = cursor.getInt(cursor.getColumnIndex(COLUMN_FOOD_ID));
                     String title = cursor.getString(cursor.getColumnIndex(COLUMN_FOOD_TITLE));
-
+                    int type=cursor.getInt(cursor.getColumnIndex(COLUMN_FOOD_TYPE));
                     String strOpenDate = cursor.getString(cursor.getColumnIndex(COLUMN_FOOD_OPEN_DATE));
                     String strDueDate = cursor.getString(cursor.getColumnIndex(COLUMN_FOOD_DUE_DATE));
 
                     // 정보로 객체를 만들어 리스트에 추가한다.
                     Food food = new Food(
-                            id, title, LocalDate.parse(strOpenDate), LocalDate.parse(strDueDate));
+                            id, title,type, LocalDate.parse(strOpenDate), LocalDate.parse(strDueDate));
                     foodList.add(food);
 
                     // 테이블 끝에 도달할 때까지 실시한다.
@@ -614,6 +617,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         // 업데이트를 위해 values 를 만든다
         ContentValues values = new ContentValues();
         values.put(COLUMN_FOOD_TITLE, food.getTitle());
+        values.put(COLUMN_FOOD_TYPE,food.getType());
         values.put(COLUMN_FOOD_OPEN_DATE, food.getOpenDate().toString());
         values.put(COLUMN_FOOD_DUE_DATE, food.getDueDate().toString());
 
@@ -660,13 +664,13 @@ public class SQLiteHelper extends SQLiteOpenHelper {
                 do {
                     int id = cursor.getInt(cursor.getColumnIndex(COLUMN_FOOD_ID));
                     String title = cursor.getString(cursor.getColumnIndex(COLUMN_FOOD_TITLE));
-
+                    int type=cursor.getInt(cursor.getColumnIndex(COLUMN_FOOD_TYPE));
                     String strOpenDate = cursor.getString(cursor.getColumnIndex(COLUMN_FOOD_OPEN_DATE));
                     String strDueDate = cursor.getString(cursor.getColumnIndex(COLUMN_FOOD_DUE_DATE));
 
                     // 정보로 객체를 만들어 검사후 리스트에 추가한다.
                     Food food = new Food(
-                            id, title, LocalDate.parse(strOpenDate), LocalDate.parse(strDueDate));
+                            id, title,type, LocalDate.parse(strOpenDate), LocalDate.parse(strDueDate));
 
                     if (food.getOpenDate().getMonthValue() == date.getMonthValue()
                             || food.getDueDate().getMonthValue() == date.getMonthValue()) {
