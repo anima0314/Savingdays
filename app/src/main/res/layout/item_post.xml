@@ -54,13 +54,24 @@
 
         </LinearLayout>
 
+<!--        <TextView-->
+<!--            android:id="@+id/createAtTextView"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:gravity="end"-->
+<!--            tools:text="2019-04-25" />-->
+
         <TextView
-            android:id="@+id/createAtTextView"
+            android:id="@+id/nickNameEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="end"
             tools:text="2019-04-25" />
 
+
+
+
     </LinearLayout>
+
 
 </androidx.cardview.widget.CardView>

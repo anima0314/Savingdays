@@ -2,12 +2,15 @@ package com.example.savingdays;
 
 import com.google.type.Date;
 
+import java.util.ArrayList;
+
 public class PostInfo {
     private String title;
     private String contents;
     private String publisher;
     private Date createdAt;
     private String id;
+
 
     public PostInfo(String title, String Contents, String publisher, String id) {
         this.title = title;
@@ -16,11 +19,21 @@ public class PostInfo {
         this.id = id;
     }
 
+//    public PostInfo(String title, String Contents, String publisher, Date createdAt) {
+//        this.title = title;
+//        this.contents = Contents;
+//        this.publisher = publisher;
+//       // this.id = id;
+//        this.createdAt = createdAt;
+//    }
+
     public PostInfo(String title, String Contents, String publisher) {
         this.title = title;
         this.contents = Contents;
         this.publisher = publisher;
     }
+
+
 
     //제목
     public String getTitle() {
@@ -54,5 +67,11 @@ public class PostInfo {
     public void setId(String id) {this.id = id; }
 
 
+    public Date getCreatedAt() {
+        return createdAt;
+    }
 
+    public void setCreatedAt(Date date) {
+        this.createdAt = createdAt;
+    }
 }

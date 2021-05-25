@@ -16,6 +16,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.Date;
+
 public class WritePostActivity extends AppCompatActivity {
     private static String TAG = "WritePostActivity";
     private FirebaseUser user;

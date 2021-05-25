@@ -24,7 +24,9 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder> {
 
@@ -75,12 +77,14 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         TextView titleTextView = cardView.findViewById(R.id.titleTextView);
         titleTextView.setText(mDataset.get(position).getTitle());
 
-        TextView createdAtTextView = cardView.findViewById(R.id.createAtTextView);
-        createdAtTextView.setText(mDataset.get(position).toString());
+        TextView nickNameEditText = cardView.findViewById(R.id.nickNameEditText);
+        nickNameEditText.setText(mDataset.get(position).getpublisher());
+
+        //TextView createdAtTextView = cardView.findViewById(R.id.createAtTextView);
+        //createdAtTextView.setText(new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(mDataset.get(position).getCreatedAt()));
 
         LinearLayout contentsLayout = cardView.findViewById(R.id.contentsLayout);
         ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-
 
         String contentsList = mDataset.get(position).getContents();
             String contents = contentsList.toString();
@@ -88,6 +92,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             textView.setLayoutParams(layoutParams);
             textView.setText(contents);
             contentsLayout.addView(textView);
+
 
     }
 
