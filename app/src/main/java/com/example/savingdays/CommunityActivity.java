@@ -4,32 +4,31 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.collection.CircularArray;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.savingdays.Adapters.PostAdapter;
-import com.example.savingdays.Utils.DatabaseHandler;
+import com.example.savingdays.listener.OnPostListener;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.EventListener;
 
 public class CommunityActivity extends AppCompatActivity {
     private static String TAG = "CommunityActivity";
@@ -37,7 +36,9 @@ public class CommunityActivity extends AppCompatActivity {
     private FirebaseFirestore firebaseFirestore;
     private DocumentReference documentReference;
     private RecyclerView recyclerView;
-
+    private PostAdapter postAdapter;
+    private ArrayList<PostInfo> postList;
+    private Util util;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,47 +71,55 @@ public class CommunityActivity extends AppCompatActivity {
                 }
             });
         }
+        util = new Util(this);
+        postList = new ArrayList<PostInfo>();
+        postAdapter = new PostAdapter(CommunityActivity.this, postList);
+        postAdapter.setOnPostListener(onPostListener);
+
         recyclerView = findViewById(R.id.recyclerView);
         findViewById(R.id.writeButton).setOnClickListener(onClickListener);
 
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(CommunityActivity.this));
+        recyclerView.setAdapter(postAdapter);
 
     }
 
     protected void onResume(){
         super.onResume();
-
-        if (firebaseUser != null) {
-            CollectionReference collectionReference = firebaseFirestore.collection("posts");
-
-            collectionReference.orderBy("createdAt", Query.Direction.DESCENDING).get()
-                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
-                    {
-                        @Override
-                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                            if (task.isSuccessful()) {
-                                ArrayList<PostInfo> postList = new ArrayList<>();
-                                for (QueryDocumentSnapshot document : task.getResult()) {
-                                    Log.d(TAG, document.getId() + " => " + document.getData());
-                                    postList.add(new PostInfo(
-                                            document.getData().get("title").toString(),
-                                            document.getData().get("contents").toString(),
-                                            document.getData().get("publisher").toString(),
-                                            document.getId()));
-
-                                }
-                                RecyclerView.Adapter mAdapter = new PostAdapter(CommunityActivity.this, postList);
-                                recyclerView.setAdapter(mAdapter);
-                            } else {
-                                Log.d(TAG, "Error getting documents: ", task.getException());
-                            }
-                        }
-                    });
-
-        }
+        postUpdate();
 
     }
+
+    OnPostListener onPostListener = new OnPostListener() {
+        @Override
+        public void onDelete(String id) {
+            Log.e("로그", "삭제:" +id);
+
+            firebaseFirestore.collection("posts").document(id)
+                    .delete()
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            util.showToast("게시글을 삭제하였습니다.");
+                            postUpdate();
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            util.showToast("게시글을 삭제하지 못하였습니다.");
+                        }
+                    });
+        }
+
+        @Override
+        public void onModify(String id) {
+            Log.e("로그", "수정 :" +id);
+
+        }
+    };
+
 
 
     View.OnClickListener onClickListener = new View.OnClickListener() {
@@ -123,6 +132,34 @@ public class CommunityActivity extends AppCompatActivity {
             }
         }
     };
+
+    private void postUpdate(){
+        if (firebaseUser != null) {
+            CollectionReference collectionReference = firebaseFirestore.collection("posts");
+            collectionReference.orderBy("createdAt", Query.Direction.DESCENDING).get()
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
+                    {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if (task.isSuccessful()) {
+                                postList.clear();
+                                for (QueryDocumentSnapshot document : task.getResult()) {
+                                    Log.d(TAG, document.getId() + " => " + document.getData());
+                                    postList.add(new PostInfo(
+                                            document.getData().get("title").toString(),
+                                            document.getData().get("contents").toString(),
+                                            document.getData().get("publisher").toString(),
+                                            document.getId()));
+
+                                }
+                                postAdapter.notifyDataSetChanged();
+                            } else {
+                                Log.d(TAG, "Error getting documents: ", task.getException());
+                            }
+                        }
+                    });
+        }
+    }
 
     private void myStartActivity(Class c) {
         Intent intent = new Intent(this, c);

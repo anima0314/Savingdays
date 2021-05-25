@@ -35,6 +35,7 @@ public class PostInfo {
 
 
 
+
     //제목
     public String getTitle() {
         return this.title;
@@ -68,10 +69,10 @@ public class PostInfo {
 
 
     public Date getCreatedAt() {
-        return createdAt;
+        return this.createdAt;
     }
 
-    public void setCreatedAt(Date date) {
+    public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
     }
 }

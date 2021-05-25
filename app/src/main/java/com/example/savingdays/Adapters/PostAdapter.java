@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.savingdays.PostInfo;
 import com.example.savingdays.R;
+import com.example.savingdays.listener.OnPostListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -33,6 +34,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     private ArrayList<PostInfo> mDataset;
     private Activity activity;
     private FirebaseFirestore firebaseFirestore;
+    private OnPostListener onPostListener;
 
     static class PostViewHolder extends RecyclerView.ViewHolder {
          CardView cardView;
@@ -47,6 +49,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         mDataset = myDataset;
         this.activity = activity;
         firebaseFirestore = FirebaseFirestore.getInstance();
+    }
+
+    public void setOnPostListener(OnPostListener onPostListener){
+        this.onPostListener = onPostListener;
     }
 
     @Override
@@ -109,28 +115,15 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
             @Override
             public boolean onMenuItemClick(MenuItem menuItem) {
+                String id = mDataset.get(position).getId();
                 switch (menuItem.getItemId()) {
-                    case R.id.modity:
+                    case R.id.modify:
                         //수정로직
-
-                        //archive(item);
+                        onPostListener.onModify(id);
                         return true;
                     case R.id.delete:
                         //삭제로직
-                        firebaseFirestore.collection("posts").document(mDataset.get(position).getId())
-                                .delete()
-                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        startToast("게시글을 삭제하였습니다.");
-                                    }
-                                })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        startToast("게시글을 삭제하지 못하였습니다.");
-                                    }
-                                });
+                        onPostListener.onDelete(id);
                         return true;
                     default:
                         return false;
@@ -141,5 +134,4 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         popup.show();
     }
 
-    private void startToast(String msg) { Toast.makeText(activity, msg, Toast.LENGTH_SHORT).show();}
 }
