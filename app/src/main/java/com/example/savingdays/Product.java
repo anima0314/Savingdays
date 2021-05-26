@@ -7,6 +7,7 @@ public class Product {
     public static final int TYPE_COSMETIC = 1;
     public static final int TYPE_SHAMPOO = 2;
 
+
     private final int id;
     private final String title;
     private final int type;

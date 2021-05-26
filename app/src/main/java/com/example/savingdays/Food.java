@@ -6,6 +6,10 @@ public class Food {
 
     public static final int TYPE_EGG = 1;
     public static final int TYPE_MILK = 2;
+    public static final int TYPE_BREAD = 3;
+    public static final int TYPE_CHEEZE = 4;
+    public static final int TYPE_BEANCURD = 5;
+
 
     private final int id;
     private final String title;
@@ -55,13 +59,19 @@ public class Food {
             case TYPE_EGG:
                 return "계란";
             case TYPE_MILK:
-                return "유제품";
+                return "우유";
+            case TYPE_BREAD:
+                return "식빵";
+            case TYPE_CHEEZE:
+                return "치즈";
+            case TYPE_BEANCURD:
+                return "두부";
         }
         return "";
     }
 
     public static int[] getTypes() {
-        return new int[] { TYPE_EGG, TYPE_MILK };
+        return new int[] { TYPE_EGG, TYPE_MILK ,TYPE_BREAD,TYPE_CHEEZE,TYPE_BEANCURD};
     }
 
 }
