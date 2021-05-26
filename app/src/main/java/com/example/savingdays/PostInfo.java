@@ -26,10 +26,11 @@ public class PostInfo {
         this.createdAt = createdAt;
     }
 
-    public PostInfo(String title, String Contents, String publisher) {
+    public PostInfo(String title, String Contents, String publisher, Date createdAt) {
         this.title = title;
         this.contents = Contents;
         this.publisher = publisher;
+        this.createdAt = createdAt;
     }
 
 

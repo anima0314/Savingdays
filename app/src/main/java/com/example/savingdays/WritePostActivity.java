@@ -22,6 +22,7 @@ import java.util.Date;
 public class WritePostActivity extends AppCompatActivity {
     private static String TAG = "WritePostActivity";
     private FirebaseUser user;
+    private FirebaseFirestore firebaseFirestore;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +52,7 @@ public class WritePostActivity extends AppCompatActivity {
         if (title.length() > 0 && contents.length() > 0) {
             user = FirebaseAuth.getInstance().getCurrentUser();
 
-            PostInfo postInfo = new PostInfo(title, contents, user.getUid(), user.getUid(), new Date());
+            PostInfo postInfo = new PostInfo(title, contents, user.getUid(), new Date());
             uploader(postInfo);
 
         }else{
