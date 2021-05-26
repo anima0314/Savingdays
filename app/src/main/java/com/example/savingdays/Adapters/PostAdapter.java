@@ -86,8 +86,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         TextView nickNameEditText = cardView.findViewById(R.id.nickNameEditText);
         nickNameEditText.setText(mDataset.get(position).getpublisher());
 
-        //TextView createdAtTextView = cardView.findViewById(R.id.createAtTextView);
-        //createdAtTextView.setText(new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(mDataset.get(position).getCreatedAt()));
+        TextView createdAtTextView = cardView.findViewById(R.id.createAtTextView);
+        createdAtTextView.setText(new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(mDataset.get(position).getCreatedAt()));
 
         LinearLayout contentsLayout = cardView.findViewById(R.id.contentsLayout);
         ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);

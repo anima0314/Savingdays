@@ -29,6 +29,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 public class CommunityActivity extends AppCompatActivity {
     private static String TAG = "CommunityActivity";
@@ -47,30 +48,28 @@ public class CommunityActivity extends AppCompatActivity {
 
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
-        if (firebaseUser == null) {
-            myStartActivity(SignUpActivity.class);
-        } else {
-            firebaseFirestore = FirebaseFirestore.getInstance();
-            DocumentReference documentReference = firebaseFirestore.collection("users").document(firebaseUser.getUid());
-            documentReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    if (task.isSuccessful()) {
-                        DocumentSnapshot document = task.getResult();
-                        if(document != null) {
-                            if(document.exists()) {
-                                Log.d(TAG, "DocumentSnapshot data: " + document.getData());
-                            } else {
-                                Log.d(TAG, "No such document");
-                                myStartActivity(MemberInitActivity.class);
-                            }
+
+        firebaseFirestore = FirebaseFirestore.getInstance();
+        DocumentReference documentReference = firebaseFirestore.collection("users").document(firebaseUser.getUid());
+        documentReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if(document != null) {
+                        if(document.exists()) {
+                            Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+                        } else {
+                            Log.d(TAG, "No such document");
+                            myStartActivity(MemberInitActivity.class);
                         }
-                    } else {
-                        Log.d(TAG, "get failed with", task.getException());
                     }
+                } else {
+                    Log.d(TAG, "get failed with", task.getException());
                 }
-            });
-        }
+            }
+        });
+
         util = new Util(this);
         postList = new ArrayList<PostInfo>();
         postAdapter = new PostAdapter(CommunityActivity.this, postList);
@@ -149,7 +148,11 @@ public class CommunityActivity extends AppCompatActivity {
                                             document.getData().get("title").toString(),
                                             document.getData().get("contents").toString(),
                                             document.getData().get("publisher").toString(),
-                                            document.getId()));
+                                            document.getId(),
+                                            new Date(document.getDate("createdAt").getTime())
+                                    ));
+
+
 
                                 }
                                 postAdapter.notifyDataSetChanged();
