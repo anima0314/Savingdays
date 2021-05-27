@@ -14,25 +14,25 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <Button
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="5dp"
-            android:layout_marginEnd="5dp"
-            android:layout_weight="1"
-            android:backgroundTint="@color/green"
-            android:clickable="false"
-            android:text="팁 게시판" />
-
-        <Button
-            android:id="@+id/btnExchange"
+            android:id="@+id/btnTip"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
             android:layout_marginEnd="5dp"
             android:layout_weight="1"
             android:backgroundTint="@color/white"
-            android:textColor="@color/gray"
             android:clickable="true"
+            android:textColor="@color/gray"
+            android:text="팁 게시판" />
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="5dp"
+            android:layout_weight="1"
+            android:clickable="false"
+            android:backgroundTint="@color/green"
             android:text="물물교환 게시판" />
 
     </LinearLayout>
