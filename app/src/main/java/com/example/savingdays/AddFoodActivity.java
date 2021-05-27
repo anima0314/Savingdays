@@ -106,7 +106,7 @@ public class AddFoodActivity extends AppCompatActivity implements View.OnClickLi
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 if(i==0){
-                    mDueDate=mOpenDate.plusMonths(1);
+                    mDueDate=mOpenDate.plusDays(25);
                     String strDueDate = String.format(Locale.getDefault(),
                             "%d년 %d월 %d일",
                             mDueDate.getYear(), mDueDate.getMonthValue(), mDueDate.getDayOfMonth() );
@@ -115,6 +115,33 @@ public class AddFoodActivity extends AppCompatActivity implements View.OnClickLi
                 }
                 if(i==1){
                     mDueDate=mOpenDate.plusMonths(2);
+                    String strDueDate = String.format(Locale.getDefault(),
+                            "%d년 %d월 %d일",
+                            mDueDate.getYear(), mDueDate.getMonthValue(), mDueDate.getDayOfMonth() );
+
+                    mDueDateButton.setText(strDueDate);
+
+                }
+                if(i==2){
+                    mDueDate=mOpenDate.plusDays(20);
+                    String strDueDate = String.format(Locale.getDefault(),
+                            "%d년 %d월 %d일",
+                            mDueDate.getYear(), mDueDate.getMonthValue(), mDueDate.getDayOfMonth() );
+
+                    mDueDateButton.setText(strDueDate);
+
+                }
+                if(i==3){
+                    mDueDate=mOpenDate.plusMonths(2).plusDays(10);
+                    String strDueDate = String.format(Locale.getDefault(),
+                            "%d년 %d월 %d일",
+                            mDueDate.getYear(), mDueDate.getMonthValue(), mDueDate.getDayOfMonth() );
+
+                    mDueDateButton.setText(strDueDate);
+
+                }
+                if(i==4){
+                    mDueDate=mOpenDate.plusMonths(3);
                     String strDueDate = String.format(Locale.getDefault(),
                             "%d년 %d월 %d일",
                             mDueDate.getYear(), mDueDate.getMonthValue(), mDueDate.getDayOfMonth() );
@@ -192,11 +219,21 @@ public class AddFoodActivity extends AppCompatActivity implements View.OnClickLi
             return false;
         }
         int type = Food.getTypes()[typePosition];
+        //제품군 별 소비기한 자동추가 날짜.
         if (type==1){
-            mDueDate=mOpenDate.plusMonths(1);
+            mDueDate=mOpenDate.plusDays(25);
         }
         if (type==2){
             mDueDate=mOpenDate.plusMonths(2);
+        }
+        if (type==3){
+            mDueDate=mOpenDate.plusDays(20);
+        }
+        if (type==4){
+            mDueDate=mOpenDate.plusMonths(2).plusDays(10);
+        }
+        if (type==5){
+            mDueDate=mOpenDate.plusMonths(3);
         }
         // DB 에 추가 및 업데이트
         Food food;

@@ -109,7 +109,7 @@ public class AddProductActivity extends AppCompatActivity implements View.OnClic
 
 
            if(i==0){
-               mDueDate=mOpenDate.plusMonths(1);
+               mDueDate=mOpenDate.plusYears(1);
                String strDueDate = String.format(Locale.getDefault(),
                        "%d년 %d월 %d일",
                        mDueDate.getYear(), mDueDate.getMonthValue(), mDueDate.getDayOfMonth() );
@@ -117,7 +117,7 @@ public class AddProductActivity extends AppCompatActivity implements View.OnClic
                mDueDateButton.setText(strDueDate);
            }
            if(i==1){
-               mDueDate=mOpenDate.plusMonths(2);
+               mDueDate=mOpenDate.plusMonths(6);
                String strDueDate = String.format(Locale.getDefault(),
                        "%d년 %d월 %d일",
                        mDueDate.getYear(), mDueDate.getMonthValue(), mDueDate.getDayOfMonth() );
@@ -125,6 +125,24 @@ public class AddProductActivity extends AppCompatActivity implements View.OnClic
                mDueDateButton.setText(strDueDate);
 
            }
+               if(i==2){
+                   mDueDate=mOpenDate.plusMonths(8);
+                   String strDueDate = String.format(Locale.getDefault(),
+                           "%d년 %d월 %d일",
+                           mDueDate.getYear(), mDueDate.getMonthValue(), mDueDate.getDayOfMonth() );
+
+                   mDueDateButton.setText(strDueDate);
+
+               }
+               if(i==3){
+                   mDueDate=mOpenDate.plusMonths(1);
+                   String strDueDate = String.format(Locale.getDefault(),
+                           "%d년 %d월 %d일",
+                           mDueDate.getYear(), mDueDate.getMonthValue(), mDueDate.getDayOfMonth() );
+
+                   mDueDateButton.setText(strDueDate);
+
+               }
 
            }
 
@@ -196,10 +214,16 @@ public class AddProductActivity extends AppCompatActivity implements View.OnClic
         }
         int type = Product.getTypes()[typePosition];
         if (type==1){
-            mDueDate=mOpenDate.plusMonths(1);
+            mDueDate=mOpenDate.plusYears(1);
         }
         if (type==2){
-            mDueDate=mOpenDate.plusMonths(2);
+            mDueDate=mOpenDate.plusMonths(6);
+        }
+        if (type==3){
+            mDueDate=mOpenDate.plusMonths(8);
+        }
+        if (type==4){
+            mDueDate=mOpenDate.plusMonths(1);
         }
         // DB 에 추가 및 업데이트
         Product product;
