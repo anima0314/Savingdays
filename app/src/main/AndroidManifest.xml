@@ -38,9 +38,13 @@
         </activity>
         <activity android:name=".CommunityActivity">
         </activity>
+        <activity android:name=".ExchangeCommunityActivity">
+        </activity>
         <activity android:name=".MemberInitActivity">
         </activity>
         <activity android:name=".WritePostActivity">
+        </activity>
+        <activity android:name=".WriteExchangePostActivity">
         </activity>
         <activity android:name=".ToDoActivity">
         </activity>

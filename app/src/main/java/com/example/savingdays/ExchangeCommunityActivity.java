@@ -4,15 +4,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.collection.CircularArray;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.savingdays.Adapters.PostAdapter;
+import com.example.savingdays.Adapters.ExchangePostAdapter;
 import com.example.savingdays.listener.OnPostListener;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -31,20 +29,20 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class CommunityActivity extends AppCompatActivity {
-    private static String TAG = "CommunityActivity";
+public class ExchangeCommunityActivity extends AppCompatActivity {
+    private static String TAG = "ExchangeCommunityActivity";
     private FirebaseUser firebaseUser;
     private FirebaseFirestore firebaseFirestore;
     private DocumentReference documentReference;
     private RecyclerView recyclerView;
-    private PostAdapter postAdapter;
-    private ArrayList<PostInfo> postList;
+    private ExchangePostAdapter exchangePostAdapter;
+    private ArrayList<ExchangePostInfo> exchangepostList;
     private Util util;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_community);
+        setContentView(R.layout.activity_exchange_community);
 
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -70,17 +68,17 @@ public class CommunityActivity extends AppCompatActivity {
         });
 
         util = new Util(this);
-        postList = new ArrayList<PostInfo>();
-        postAdapter = new PostAdapter(CommunityActivity.this, postList);
-        postAdapter.setOnPostListener(onPostListener);
+        exchangepostList = new ArrayList<ExchangePostInfo>();
+        exchangePostAdapter = new ExchangePostAdapter(ExchangeCommunityActivity.this, exchangepostList);
+        exchangePostAdapter.setOnPostListener(onPostListener);
 
         recyclerView = findViewById(R.id.recyclerView);
         findViewById(R.id.writeButton).setOnClickListener(onClickListener);
-        findViewById(R.id.btnExchange).setOnClickListener(onClickListener);
+        findViewById(R.id.btnTip).setOnClickListener(onClickListener);
 
         recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(CommunityActivity.this));
-        recyclerView.setAdapter(postAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(ExchangeCommunityActivity.this));
+        recyclerView.setAdapter(exchangePostAdapter);
 
     }
 
@@ -89,7 +87,6 @@ public class CommunityActivity extends AppCompatActivity {
         postUpdate();
 
     }
-
     public void onBackPressed() {
         super.onBackPressed();
         myStartActivity(MainActivity.class);
@@ -100,7 +97,7 @@ public class CommunityActivity extends AppCompatActivity {
         public void onDelete(String id) {
             Log.e("로그", "삭제:" +id);
 
-            firebaseFirestore.collection("posts").document(id)
+            firebaseFirestore.collection("exchange_posts").document(id)
                     .delete()
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
@@ -131,10 +128,10 @@ public class CommunityActivity extends AppCompatActivity {
         public void onClick(View v) {
             switch (v.getId()){
                 case R.id.writeButton:
-                    myStartActivity(WritePostActivity.class);
+                    myStartActivity(WriteExchangePostActivity.class);
                     break;
-                case R.id.btnExchange:
-                    myStartActivity(ExchangeCommunityActivity.class);
+                case R.id.btnTip:
+                    myStartActivity(CommunityActivity.class);
                     break;
             }
         }
@@ -142,17 +139,17 @@ public class CommunityActivity extends AppCompatActivity {
 
     private void postUpdate(){
         if (firebaseUser != null) {
-            CollectionReference collectionReference = firebaseFirestore.collection("posts");
+            CollectionReference collectionReference = firebaseFirestore.collection("exchange_posts");
             collectionReference.orderBy("createdAt", Query.Direction.DESCENDING).get()
                     .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
                     {
                         @Override
                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
                             if (task.isSuccessful()) {
-                                postList.clear();
+                                exchangepostList.clear();
                                 for (QueryDocumentSnapshot document : task.getResult()) {
                                     Log.d(TAG, document.getId() + " => " + document.getData());
-                                    postList.add(new PostInfo(
+                                    exchangepostList.add(new ExchangePostInfo(
                                             document.getData().get("title").toString(),
                                             document.getData().get("contents").toString(),
                                             document.getData().get("publisher").toString(),
@@ -163,7 +160,7 @@ public class CommunityActivity extends AppCompatActivity {
 
 
                                 }
-                                postAdapter.notifyDataSetChanged();
+                                exchangePostAdapter.notifyDataSetChanged();
                             } else {
                                 Log.d(TAG, "Error getting documents: ", task.getException());
                             }

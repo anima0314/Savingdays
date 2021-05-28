@@ -19,15 +19,15 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.Date;
 
 
-public class WritePostActivity extends AppCompatActivity {
-    private static String TAG = "WritePostActivity";
+public class WriteExchangePostActivity extends AppCompatActivity {
+    private static String TAG = "WriteExchangePostActivity";
     private FirebaseUser user;
     private FirebaseFirestore firebaseFirestore;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_write_post);
+        setContentView(R.layout.activity_write_exchange_post);
 
         findViewById(R.id.check).setOnClickListener(onClickListener);
     }
@@ -52,16 +52,16 @@ public class WritePostActivity extends AppCompatActivity {
         if (title.length() > 0 && contents.length() > 0) {
             user = FirebaseAuth.getInstance().getCurrentUser();
 
-            PostInfo postInfo = new PostInfo(title, contents, user.getUid(), new Date());
-            uploader(postInfo);
+            ExchangePostInfo exchangePostInfo = new ExchangePostInfo(title, contents, user.getUid(), new Date());
+            uploader(exchangePostInfo);
 
         }else{
             startToast("게시글을 입력해 주세요.");
         }
     }
-    private void uploader(PostInfo postInfo){
+    private void uploader(ExchangePostInfo exchangePostInfo){
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("posts").add(postInfo)
+        db.collection("exchange_posts").add(exchangePostInfo)
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
