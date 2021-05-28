@@ -27,7 +27,6 @@ public class SignUpActivity extends AppCompatActivity {
 
         findViewById(R.id.signUpButton).setOnClickListener(onClickListener);
         findViewById(R.id.gotoLoginButton).setOnClickListener(onClickListener);
-        findViewById(R.id.googleLoginButton).setOnClickListener(onClickListener);
     }
 
     @Override
@@ -48,9 +47,6 @@ public class SignUpActivity extends AppCompatActivity {
                     break;
                 case R.id.gotoLoginButton:
                     myStartActivity(LoginActivity.class);
-                    break;
-                case R.id.googleLoginButton:
-                    myStartActivity(GoogleloginActivity.class);
                     break;
             }
         }

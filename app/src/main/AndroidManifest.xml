@@ -48,10 +48,6 @@
         </activity>
         <activity android:name=".ToDoActivity">
         </activity>
-        <activity android:name=".GoogleloginActivity">
-        </activity>
-        <activity android:name=".ResultActivity">
-        </activity>
         <activity android:name=".StoreActivity">
         </activity>
     </application>
