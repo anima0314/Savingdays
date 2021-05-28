@@ -27,7 +27,7 @@
                 android:textColor="@color/black"
                 android:textSize="20sp"
                 android:textStyle="bold"
-                tools:text="타이블" />
+                tools:text="타이틀" />
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/menu"

@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.savingdays.Adapters.ExchangePostAdapter;
-import com.example.savingdays.Adapters.PostAdapter;
 import com.example.savingdays.listener.OnPostListener;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -43,7 +42,7 @@ public class ExchangeCommunityActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_exchangecommunity);
+        setContentView(R.layout.activity_exchange_community);
 
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
