@@ -78,7 +78,7 @@ public class CommunityActivity extends AppCompatActivity {
         findViewById(R.id.writeButton).setOnClickListener(onClickListener);
         findViewById(R.id.btnExchange).setOnClickListener(onClickListener);
 
-        recyclerView.setHasFixedSize(true);
+        //recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(CommunityActivity.this));
         recyclerView.setAdapter(postAdapter);
 
