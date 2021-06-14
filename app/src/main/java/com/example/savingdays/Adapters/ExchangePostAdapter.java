@@ -15,7 +15,7 @@ import androidx.appcompat.widget.PopupMenu;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.savingdays.ExchangePostInfo;
+import com.example.savingdays.Model.ExchangePostInfo;
 import com.example.savingdays.R;
 import com.example.savingdays.listener.OnPostListener;
 import com.google.firebase.firestore.FirebaseFirestore;

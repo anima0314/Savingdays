@@ -11,6 +11,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.savingdays.Adapters.ExchangePostAdapter;
+import com.example.savingdays.Model.ExchangePostInfo;
+import com.example.savingdays.Utils.Util;
 import com.example.savingdays.listener.OnPostListener;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;

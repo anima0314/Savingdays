@@ -15,8 +15,8 @@ import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.example.savingdays.SQLiteHelper;
-import com.example.savingdays.Product;
+import com.example.savingdays.Model.Product;
+import com.example.savingdays.Utils.SQLiteHelper;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

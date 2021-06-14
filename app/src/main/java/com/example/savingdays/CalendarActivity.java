@@ -1,6 +1,5 @@
 package com.example.savingdays;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -21,20 +20,17 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.GridLayout;
-import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.savingdays.ProductAdapter;
-import com.example.savingdays.ScheduleAdapter;
-import com.example.savingdays.FoodAdapter;
-
-import com.example.savingdays.SQLiteHelper;
-import com.example.savingdays.Product;
-import com.example.savingdays.Food;
-
-import com.example.savingdays.Schedule;
+import com.example.savingdays.Adapters.FoodAdapter;
+import com.example.savingdays.Adapters.ProductAdapter;
+import com.example.savingdays.Adapters.ScheduleAdapter;
+import com.example.savingdays.Model.Food;
+import com.example.savingdays.Model.Product;
+import com.example.savingdays.Model.Schedule;
+import com.example.savingdays.Utils.SQLiteHelper;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
